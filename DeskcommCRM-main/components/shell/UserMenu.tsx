@@ -99,20 +99,27 @@ export function UserMenu({
           </>
         )}
       </button>
-    ) : (
-      <Button
-        variant="ghost"
-        size="icon"
-        className={cn("rounded-full", variante === "controles" && "md:hidden")}
-        aria-label={rotuloDoMenu}
-      >
-        {avatar("h-8 w-8")}
-      </Button>
-    );
+    ) : null;
 
   const menu = (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>{gatilho}</DropdownMenuTrigger>
+      {gatilho ? (
+        <DropdownMenuTrigger asChild>{gatilho}</DropdownMenuTrigger>
+      ) : (
+        // O botão mora DIRETO sob o `Trigger asChild`: é por essa vizinhança
+        // que `tests/unit/controle-decorativo.test.ts` sabe que o botão sem
+        // `onClick` tem quem lhe dê o clique (o Radix).
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn("rounded-full", variante === "controles" && "md:hidden")}
+            aria-label={rotuloDoMenu}
+          >
+            {avatar("h-8 w-8")}
+          </Button>
+        </DropdownMenuTrigger>
+      )}
       <DropdownMenuContent
         align={variante === "cartao" ? "start" : "end"}
         side={variante === "cartao" ? "top" : "bottom"}

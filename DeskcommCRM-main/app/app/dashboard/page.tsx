@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { requireAuth, resolveActiveOrg } from "@/lib/auth/server";
 import { traduzir } from "@/lib/i18n/dicionario";
+import { tagDeIdioma } from "@/lib/i18n/datas";
 import { carregarDashboard } from "@/lib/dashboard/carregar";
 
 import { Painel } from "./_components/Painel";
@@ -159,7 +160,13 @@ export default async function DashboardPage({
           icone="tarefa"
           verTodos={{ href: "/app/tasks", rotulo: t("Ver todas") }}
         >
-          <ProximasTarefas itens={dados.tarefas} fuso={dados.fuso} hoje={dados.hoje} t={t} />
+          <ProximasTarefas
+            itens={dados.tarefas}
+            fuso={dados.fuso}
+            hoje={dados.hoje}
+            idioma={tagDeIdioma(user.idioma)}
+            t={t}
+          />
         </Painel>
         <Painel
           titulo={t("Clientes em Destaque")}

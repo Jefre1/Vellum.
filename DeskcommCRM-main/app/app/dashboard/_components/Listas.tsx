@@ -88,22 +88,25 @@ export function ProximasTarefas({
   itens,
   fuso,
   hoje,
+  idioma,
   t,
 }: {
   itens: TarefaProxima[] | null;
   fuso: string;
   hoje: string;
+  /** Tag BCP 47 do idioma da pessoa (`tagDeIdioma`) — a data segue o idioma. */
+  idioma: string;
   t: T;
 }) {
   if (itens === null) return <Vazio texto={t("Não foi possível carregar as tarefas.")} />;
   if (itens.length === 0) return <Vazio texto={t("Nenhuma tarefa em aberto.")} />;
   const amanha = new Date(Date.parse(`${hoje}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
-  const hora = new Intl.DateTimeFormat("pt-BR", {
+  const hora = new Intl.DateTimeFormat(idioma, {
     timeZone: fuso,
     hour: "2-digit",
     minute: "2-digit",
   });
-  const data = new Intl.DateTimeFormat("pt-BR", {
+  const data = new Intl.DateTimeFormat(idioma, {
     timeZone: fuso,
     day: "2-digit",
     month: "2-digit",

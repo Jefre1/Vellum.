@@ -60,12 +60,15 @@ function comoPapel(role: ActiveOrg["role"]) {
   authRef.activeOrg = { orgId: "org-1", name: "Org", role };
 }
 
+// Por atributo, e não por classe de estilo: o redesign lilás trocou a altura da
+// linha da marca (`h-14` → `h-12`) e pôs um filete `border-t` entre grupos —
+// os seletores por classe passaram a achar outro elemento sem nada ter quebrado.
 function linhaDaLogo(): Element | null {
-  return document.querySelector(".h-14");
+  return document.querySelector("[data-linha-da-marca]");
 }
 
 function rodape(): Element | null {
-  return document.querySelector(".border-t");
+  return document.querySelector("[data-rodape-fixo]");
 }
 
 afterEach(cleanup);
@@ -95,9 +98,7 @@ describe("Sidebar — controle de recolher no alto (#2722)", () => {
     expect(rodape()?.contains(botao)).toBe(false);
     // Antes do menu, não depois: o controle é o primeiro thing do alto.
     const menu = document.querySelector("nav")!;
-    expect(
-      menu.compareDocumentPosition(botao) & Node.DOCUMENT_POSITION_PRECEDING,
-    ).toBeTruthy();
+    expect(menu.compareDocumentPosition(botao) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
   });
 });
 

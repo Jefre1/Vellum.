@@ -152,7 +152,7 @@ export async function carregarDashboard(opts: {
     lerFunil(supabase, orgId, agora, dias),
     supabase
       .from("crm_lead_activities")
-      .select("id, type, lead_id, performed_at, crm_leads(title)")
+      .select("id, type, lead_id, performed_at, crm_leads!crm_lead_activities_lead_id_fkey(title)")
       .eq("organization_id", orgId)
       .order("performed_at", { ascending: false })
       .limit(4),

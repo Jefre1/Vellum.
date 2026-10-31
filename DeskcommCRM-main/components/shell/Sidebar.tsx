@@ -186,6 +186,7 @@ export function SidebarContent({
   return (
     <>
       <div
+        data-linha-da-marca=""
         className={cn(
           "flex h-12 items-center px-4",
           collapsed ? "justify-center" : "justify-start",
@@ -485,7 +486,7 @@ export function SidebarContent({
         `aria-label`, então o nome acessível "Ajuda" continua o mesmo, e
         continua sendo o último link do rodapé (#3567).
       */}
-      <div className="border-t border-border/60 px-2 py-1">
+      <div data-rodape-fixo="" className="border-t border-border/60 px-2 py-1">
         <div className={cn("flex gap-1", collapsed ? "flex-col" : "items-center")}>
           {rodape && (
             <Link

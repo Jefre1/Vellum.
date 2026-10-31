@@ -35,6 +35,12 @@
  * TEXTO visível do rodapé não muda, e `lgpd-pdf-meet.test.ts` continua casando
  * a extração do PDF real.
  *
+ * Sexta exceção, regravando só COR: a troca da paleta do produto para lilás
+ * mudou as duas cores de texto que os e-mails herdam da régua (`#1c1a16` →
+ * `#1c1830` no corpo, `#7d786c` → `#736c8e` nas notas). Nos três JSON (e-mail e
+ * alarmes) só esses dois hex foram trocados; texto, links e estrutura seguem
+ * byte a byte os de antes.
+ *
  *
  * Terceira exceção, e esta NÃO regrava fixture: o doc 110 (resposta 2A) dá ao
  * `data.json` brasileiro TODAS as mensagens (`messages_completas`) e a lista
