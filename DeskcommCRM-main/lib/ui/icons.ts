@@ -127,6 +127,7 @@ export {
   // misc
   DotsThree,
   CaretDown,
+  CaretUpDown,
   CaretUp,
   CaretDoubleLeft,
   CaretDoubleRight,
@@ -164,5 +165,16 @@ export {
   // em quase toda tela — dois identificadores iguais no mesmo import seriam
   // erro de compilação na primeira tela que precisasse dos dois.
   ShoppingCart,
+  // Dashboard (cards de indicador, painéis e menu): moeda da receita, raio das
+  // atividades, caixa das tarefas, estrela do destaque, setas de variação e a
+  // grade do item "Dashboard" no menu.
+  CurrencyCircleDollar,
+  Lightning,
+  CheckSquare,
+  Star,
+  ArrowUp,
+  ArrowDown,
+  SquaresFour,
+  Circle,
   LinkSimple as LinkIcon,
 } from "@phosphor-icons/react/dist/ssr";

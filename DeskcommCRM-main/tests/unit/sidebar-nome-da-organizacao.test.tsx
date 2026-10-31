@@ -35,6 +35,9 @@ vi.mock("@/components/connections/ConnectionHealthDot", () => ({
 // número não é o objeto destes casos (o dele mora em contador-de-casos.test.tsx).
 vi.mock("@/components/shell/ContadorDeCasos", () => ({ ContadorDeCasos: () => null }));
 vi.mock("@/components/shell/ContadorDaFila", () => ({ ContadorDaFila: () => null }));
+// O cartão do usuário no rodapé (redesign lilás) é testado nas suítes do
+// `UserMenu`; aqui ele sairia lendo `useUser`, que este mock não fornece.
+vi.mock("@/components/shell/UserMenu", () => ({ UserMenu: () => null }));
 vi.mock("@/components/shell/VersionFooter", () => ({ VersionFooter: () => null }));
 
 /**

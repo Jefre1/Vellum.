@@ -63,7 +63,7 @@ export function AppShell({ sidebarCollapsed, podeAtender, children }: AppShellPr
       topo ficam ACIMA da casca, e sem o desconto o documento media a tela
       mais a faixa — rolável justo quando o WhatsApp está desconectado.
     */
-    <div className="flex min-h-[calc(100dvh-var(--faixas-de-cima,0px))] w-full bg-background">
+    <div className="flex min-h-[calc(100dvh-var(--faixas-de-cima,0px))] w-full bg-transparent">
       <BarraDeProgressoNavegacao />
       <div className="hidden md:block">
         <Sidebar collapsed={sidebarCollapsed} />

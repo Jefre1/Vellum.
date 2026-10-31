@@ -35,7 +35,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     <Button
       variant="ghost"
       size="icon"
-      className={cn(className)}
+      className={cn("rounded-full hover:bg-accent-soft hover:text-accent", className)}
       onClick={cycle}
       aria-label={t(`Tema: ${theme}. Cmd+Shift+L para alternar.`)}
       // O servidor não sabe a preferência salva no navegador do usuário --

@@ -859,6 +859,20 @@ export const NAV_CATALOG = [
     modulo: "honorarios",
   },
   {
+    // O PAINEL DE ENTRADA: KPIs, vendas no tempo, funil, atividades, tarefas e
+    // clientes em destaque, numa tela só. SEM `sidebar: true` de propósito: o
+    // menu lateral desenha esta porta FIXA no alto, acima dos grupos (como o
+    // mockup do redesign lilás pede), e com `sidebar` ela apareceria duas
+    // vezes — de novo dentro de Análise. A regra de quem vê continua sendo a
+    // deste catálogo: o menu só a desenha se `destinosDaInterface` a devolve.
+    href: "/app/dashboard",
+    label: "Dashboard",
+    description: "Resumo do negócio: clientes, vendas, funil, atividades e tarefas do período.",
+    icon: "SquaresFour",
+    group: "analise",
+    section: "Os números do período",
+  },
+  {
     href: "/app/metrics",
     label: "Desempenho",
     description: "Funil e performance por atendente nos últimos 30 dias.",

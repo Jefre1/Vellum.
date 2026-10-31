@@ -3,7 +3,15 @@ import Link from "next/link";
 import { useT } from "@/hooks/i18n/useT";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { ArrowRight, BookOpen, CaretDoubleLeft, CaretDoubleRight, CaretDown, Gear } from "@/lib/ui/icons";
+import {
+  ArrowRight,
+  BookOpen,
+  CaretDoubleLeft,
+  CaretDoubleRight,
+  CaretDown,
+  Gear,
+  SquaresFour,
+} from "@/lib/ui/icons";
 import { cn } from "@/lib/utils";
 import { toggleSidebar } from "@/app/actions/shell/toggleSidebar";
 import { useAuth } from "@/hooks/auth/AuthProvider";
@@ -11,6 +19,8 @@ import { ConnectionHealthDot } from "@/components/connections/ConnectionHealthDo
 import { ContadorDeCasos } from "@/components/shell/ContadorDeCasos";
 import { ContadorDaFila } from "@/components/shell/ContadorDaFila";
 import { VersionFooter } from "@/components/shell/VersionFooter";
+import { UserMenu } from "@/components/shell/UserMenu";
+import { destinosDaInterface } from "@/lib/navigation/interface";
 import { LogotipoDoProduto, SimboloDoProduto } from "@/components/branding/MarcaDoProduto";
 import { marcaEhADoProduto } from "@/lib/branding";
 import { useMarcaDaInstalacao } from "@/lib/branding/contexto";
@@ -18,6 +28,19 @@ import { GRUPO_NO_RODAPE, sidebarGroups } from "@/lib/navigation/registry";
 import { usePrefetchPorIntencao } from "@/hooks/navigation/prefetchPorIntencao";
 
 const CHAVE_GRUPOS_FECHADOS = "sidebar-grupos-fechados";
+
+/**
+ * As três classes de um item do menu, num lugar só (redesign lilás).
+ *
+ * A ALTURA NÃO MUDOU: `py-1` + `text-sm` seguem dando a linha de 28px que o
+ * comentário de densidade abaixo mede — o redesign mexe no desenho (pílula
+ * arredondada, ativo em degradê lilás com sombra), não no espaço.
+ */
+const ITEM =
+  "flex items-center gap-3 rounded-lg px-3 py-1 text-sm font-medium transition-[background-color,color,box-shadow] duration-fast";
+const ITEM_ATIVO =
+  "bg-gradient-to-r from-accent to-accent-hover text-accent-foreground shadow-md shadow-accent/25";
+const ITEM_INATIVO = "text-text-muted hover:bg-accent-soft hover:text-accent";
 
 interface SidebarContentProps {
   collapsed: boolean;
@@ -76,6 +99,19 @@ export function SidebarContent({
    * e uma tag de exemplo aqui é indistinguível de um link de verdade para ela.
    */
   const ajuda = grupoDoRodape?.items.find((d) => d.href === "/app/ajuda");
+  /**
+   * O DASHBOARD, fixo no alto do menu (redesign lilás). Ele não tem
+   * `sidebar: true` no catálogo — senão apareceria de novo dentro de Análise —,
+   * então a pergunta "esta pessoa alcança a tela?" vai ao MESMO filtro que
+   * decide o resto: papel, módulo, capacidade e as áreas que a empresa escolheu.
+   */
+  const dashboard = destinosDaInterface(
+    activeOrg?.interface_settings,
+    user.is_platform_admin && !user.support,
+    activeOrg?.role ?? null,
+    activeOrg?.modulos_ligados ?? [],
+    activeOrg?.capacidades_ligadas ?? [],
+  ).find((d) => d.href === "/app/dashboard");
 
   /**
    * Grupo fechado é preferência POR NAVEGADOR, não por conta: começa vazio (tudo
@@ -151,7 +187,7 @@ export function SidebarContent({
     <>
       <div
         className={cn(
-          "flex h-14 items-center border-b px-4",
+          "flex h-12 items-center px-4",
           collapsed ? "justify-center" : "justify-start",
         )}
       >
@@ -220,10 +256,7 @@ export function SidebarContent({
           )
         ) : (
           <span
-            className={cn(
-              "min-w-0 truncate font-semibold tracking-tight",
-              collapsed && "sr-only",
-            )}
+            className={cn("min-w-0 truncate font-semibold tracking-tight", collapsed && "sr-only")}
             title={nome}
           >
             {nome}
@@ -256,7 +289,7 @@ export function SidebarContent({
       {/* Issue #2722 — no trilho recolhido (64px) não cabe controle ao lado
           do símbolo: ele vira uma faixa imediatamente abaixo da marca. */}
       {showCollapseControl && collapsed && (
-        <div className="border-b px-2 py-1">
+        <div className="px-2 py-1">
           <BotaoDeRecolher
             collapsed
             isPending={isPending}
@@ -319,27 +352,48 @@ export function SidebarContent({
         e nenhum destino novo apareceu aqui.
       */}
       <nav
-        className="flex-1 space-y-2 overflow-y-auto px-2 py-1"
+        className="flex-1 space-y-1 overflow-y-auto px-2 py-1"
         aria-label={t("Navegação principal")}
       >
+        {dashboard && (
+          <Link
+            href={dashboard.href}
+            {...intencao(dashboard.href)}
+            title={collapsed ? t(dashboard.label) : undefined}
+            aria-current={pathname === dashboard.href ? "page" : undefined}
+            onClick={onNavigate}
+            className={cn(
+              ITEM,
+              pathname === dashboard.href ? ITEM_ATIVO : ITEM_INATIVO,
+              collapsed && "justify-center px-2",
+            )}
+          >
+            <SquaresFour
+              size={18}
+              weight={pathname === dashboard.href ? "fill" : "regular"}
+              aria-hidden
+            />
+            {!collapsed && <span className="truncate">{t(dashboard.label)}</span>}
+          </Link>
+        )}
         {grupos.map(({ group, items }) => {
           const tituloId = `nav-grupo-${group.id}`;
           // Recolhido o sidebar inteiro (rail de 64px), o grupo sempre mostra
           // seus itens — não há onde desenhar cabeçalho nem seta para fechá-lo.
           const aberto = collapsed || !gruposFechados.has(group.id);
           return (
-            <div key={group.id} className="space-y-1">
+            <div key={group.id} className="space-y-0.5">
               {/* Colapsado, o sidebar tem 64px: seis rótulos ali seriam ilegíveis.
                   Vira um filete separador, que preserva o agrupamento sem texto. */}
               {collapsed ? (
-                <div aria-hidden className="mx-2 border-t first:hidden" />
+                <div aria-hidden className="mx-2 border-t border-border/60" />
               ) : (
                 <h2 id={tituloId}>
                   <button
                     type="button"
                     onClick={() => toggleGrupo(group.id)}
                     aria-expanded={aberto}
-                    className="flex w-full items-center justify-between rounded-md px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground"
+                    className="flex w-full items-center justify-between rounded-md px-3 py-0.5 text-[11px] font-semibold tracking-wide text-text-subtle uppercase transition-colors hover:text-text"
                   >
                     {t(group.label)}
                     <CaretDown
@@ -358,7 +412,7 @@ export function SidebarContent({
                 <ul
                   aria-labelledby={collapsed ? undefined : tituloId}
                   aria-label={collapsed ? t(group.label) : undefined}
-                  className="space-y-1"
+                  className="space-y-0.5"
                 >
                   {items.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -372,10 +426,9 @@ export function SidebarContent({
                           aria-current={isActive ? "page" : undefined}
                           onClick={onNavigate}
                           className={cn(
-                            "relative flex items-center gap-3 rounded-md px-3 py-1 text-sm transition-colors",
-                            isActive
-                              ? "bg-accent text-accent-foreground"
-                              : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                            "relative",
+                            ITEM,
+                            isActive ? ITEM_ATIVO : ITEM_INATIVO,
                             collapsed && "justify-center px-2",
                           )}
                         >
@@ -401,10 +454,8 @@ export function SidebarContent({
                         aria-current={pathname === group.hub.href ? "page" : undefined}
                         onClick={onNavigate}
                         className={cn(
-                          "flex items-center gap-3 rounded-md px-3 py-1 text-sm transition-colors",
-                          pathname === group.hub.href
-                            ? "bg-accent text-accent-foreground"
-                            : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                          ITEM,
+                          pathname === group.hub.href ? ITEM_ATIVO : ITEM_INATIVO,
                           collapsed && "justify-center px-2",
                         )}
                       >
@@ -419,50 +470,67 @@ export function SidebarContent({
           );
         })}
       </nav>
-      <div className="border-t px-2 py-1">
-        {rodape && (
-          <Link
-            href={rodape.href}
-            {...intencao(rodape.href)}
-            title={collapsed ? t(rodape.label) : undefined}
-            aria-current={pathname.startsWith(rodape.href) ? "page" : undefined}
-            onClick={onNavigate}
-            className={cn(
-              "mb-0.5 flex items-center gap-3 rounded-md px-3 py-1 text-sm transition-colors",
-              pathname.startsWith(rodape.href)
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-              collapsed && "justify-center px-2",
-            )}
-          >
-            <Gear size={18} aria-hidden />
-            {!collapsed && <span className="truncate">{t(rodape.label)}</span>}
-          </Link>
-        )}
-        {ajuda && (
-          // Último link do rodapé, como pedido na issue #3567: é o que se
-          // procura quando o resto não respondeu. Mesmas classes do link de
-          // Configurações acima — rodapé com dois pesos diferentes lê-se como
-          // dois assuntos diferentes.
-          <Link
-            href={ajuda.href}
-            {...intencao(ajuda.href)}
-            title={collapsed ? t(ajuda.label) : undefined}
-            aria-current={pathname.startsWith(ajuda.href) ? "page" : undefined}
-            onClick={onNavigate}
-            className={cn(
-              "mb-0.5 flex items-center gap-3 rounded-md px-3 py-1 text-sm transition-colors",
-              pathname.startsWith(ajuda.href)
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-              collapsed && "justify-center px-2",
-            )}
-          >
-            <BookOpen size={18} aria-hidden />
-            {!collapsed && <span className="truncate">{t(ajuda.label)}</span>}
-          </Link>
-        )}
+      {/*
+        O RODAPÉ FIXO DO REDESIGN LILÁS — e a conta de densidade dele.
+
+        O cartão do usuário (mockup) entrou aqui, e o Dashboard entrou no alto
+        da nav: juntos, 85px a mais, medidos em 1280×900 com a moldura de
+        vidro. O `navegacao.spec.ts` exige o menu inteiro sem rolar nessa
+        altura, e nenhum destino saiu do menu para pagar a conta. Ela foi paga
+        na MOLDURA: cabeçalho de grupo `py-1` → `py-0.5` (6 × 4px), linha da
+        marca `h-14` → `h-12`, respiro do painel 12px → 8px, cartão compacto,
+        intervalo entre grupos 8px → 4px e entre itens 4px → 2px (a ALTURA de
+        cada item segue 28px; muda só o vão entre as pílulas), e Ajuda virou o
+        ícone ao lado de Configurações na MESMA linha — com
+        `aria-label`, então o nome acessível "Ajuda" continua o mesmo, e
+        continua sendo o último link do rodapé (#3567).
+      */}
+      <div className="border-t border-border/60 px-2 py-1">
+        <div className={cn("flex gap-1", collapsed ? "flex-col" : "items-center")}>
+          {rodape && (
+            <Link
+              href={rodape.href}
+              {...intencao(rodape.href)}
+              title={collapsed ? t(rodape.label) : undefined}
+              aria-current={pathname.startsWith(rodape.href) ? "page" : undefined}
+              onClick={onNavigate}
+              className={cn(
+                "min-w-0 flex-1",
+                ITEM,
+                pathname.startsWith(rodape.href) ? ITEM_ATIVO : ITEM_INATIVO,
+                collapsed && "justify-center px-2",
+              )}
+            >
+              <Gear size={18} aria-hidden />
+              {!collapsed && <span className="truncate">{t(rodape.label)}</span>}
+            </Link>
+          )}
+          {ajuda && (
+            // Último link do rodapé, como pedido na issue #3567: é o que se
+            // procura quando o resto não respondeu. Mesmas classes do link de
+            // Configurações acima — rodapé com dois pesos diferentes lê-se como
+            // dois assuntos diferentes.
+            <Link
+              href={ajuda.href}
+              {...intencao(ajuda.href)}
+              title={t(ajuda.label)}
+              aria-label={t(ajuda.label)}
+              aria-current={pathname.startsWith(ajuda.href) ? "page" : undefined}
+              onClick={onNavigate}
+              className={cn(
+                "shrink-0 justify-center px-2",
+                ITEM,
+                pathname.startsWith(ajuda.href) ? ITEM_ATIVO : ITEM_INATIVO,
+              )}
+            >
+              <BookOpen size={18} aria-hidden />
+            </Link>
+          )}
+        </div>
         <VersionFooter collapsed={collapsed} onNavigate={onNavigate} />
+        <div className="mt-0.5 border-t border-border/60 pt-1">
+          <UserMenu variante="cartao" recolhido={collapsed} />
+        </div>
       </div>
     </>
   );
@@ -503,7 +571,7 @@ function BotaoDeRecolher({
       onClick={onClick}
       disabled={isPending}
       className={cn(
-        "flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+        "flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs text-text-subtle hover:bg-accent-soft hover:text-accent",
         (collapsed || soIcone) && "justify-center px-2",
       )}
       aria-label={rotulo}
@@ -558,11 +626,19 @@ export function Sidebar({ collapsed }: { collapsed: boolean }) {
         // `duration-base` em vez do `duration-200` literal: 200ms é o mesmo
         // número, mas vindo de `--duration-base`. A Lei de movimento fecha a
         // tabela de durações, e número solto é o que a faz apodrecer.
-        "sticky top-[var(--faixas-de-cima,0px)] z-30 flex h-[calc(100dvh-var(--faixas-de-cima,0px))] shrink-0 flex-col border-r bg-card transition-[width] duration-base",
-        collapsed ? "w-16" : "w-60",
+        //
+        // Redesign lilás: a barra é um painel de VIDRO flutuando sobre a luz do
+        // fundo, com 8px de respiro em cima, embaixo e à esquerda (`p-2 pr-0`;
+        // à direita quem dá o respiro é o padding do conteúdo). O respiro é do
+        // `<aside>` e entra na largura: `w-[4.5rem]`/`w-[15.5rem]` = trilho de
+        // 64px / painel de 240px + 8px — continua UMA medida só, a desta linha.
+        "sticky top-[var(--faixas-de-cima,0px)] z-30 flex h-[calc(100dvh-var(--faixas-de-cima,0px))] shrink-0 flex-col p-2 pr-0 transition-[width] duration-base",
+        collapsed ? "w-[4.5rem]" : "w-[15.5rem]",
       )}
     >
-      <SidebarContent collapsed={collapsed} />
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl glass">
+        <SidebarContent collapsed={collapsed} />
+      </div>
     </aside>
   );
 }

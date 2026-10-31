@@ -48,6 +48,9 @@ vi.mock("@/components/shell/ContadorDaFila", () => ({
 vi.mock("@/app/actions/shell/toggleSidebar", () => ({
   toggleSidebar: vi.fn(),
 }));
+// O cartão do usuário no rodapé (redesign lilás) é testado nas suítes do
+// `UserMenu`; aqui ele sairia lendo `useUser`, que este mock não fornece.
+vi.mock("@/components/shell/UserMenu", () => ({ UserMenu: () => null }));
 vi.mock("@/components/shell/VersionFooter", () => ({
   VersionFooter: () => null,
 }));

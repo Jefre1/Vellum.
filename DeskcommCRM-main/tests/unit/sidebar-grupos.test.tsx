@@ -49,6 +49,9 @@ vi.mock("@/app/actions/shell/toggleSidebar", () => ({
 }));
 // Busca a versão via react-query; sem QueryClientProvider ele lança, e o
 // rodapé de versão não é o que estes testes examinam.
+// O cartão do usuário no rodapé (redesign lilás) é testado nas suítes do
+// `UserMenu`; aqui ele sairia lendo `useUser`, que este mock não fornece.
+vi.mock("@/components/shell/UserMenu", () => ({ UserMenu: () => null }));
 vi.mock("@/components/shell/VersionFooter", () => ({
   VersionFooter: () => null,
 }));
