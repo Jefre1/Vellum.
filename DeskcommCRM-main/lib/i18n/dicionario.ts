@@ -19018,7 +19018,6 @@ export const DICIONARIO: Traducoes = {
   "novo": { es: "nuevo" },
   "venda": { es: "venta" },
   "vendas": { es: "ventas" },
-  "há": { es: "hace" },
   "vs. ontem": { es: "vs. ayer" },
   "vs. período anterior": { es: "vs. período anterior" },
   "crescimento no período": { es: "crecimiento en el período" },

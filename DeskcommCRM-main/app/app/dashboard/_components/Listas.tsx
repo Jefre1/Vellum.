@@ -19,11 +19,13 @@ function haQuanto(iso: string, agora: number, t: T): string {
   const s = Math.max(0, Math.round((agora - Date.parse(iso)) / 1000));
   if (s < 60) return t("agora");
   const m = Math.round(s / 60);
-  if (m < 60) return `${t("há")} ${m} ${m === 1 ? t("minuto") : t("minutos")}`;
+  // Uma chave com lacuna (`há {tempo}`), nunca "há" solto + número: cada
+  // língua põe a duração onde a frase dela pede (frase-em-pedacos-segue-a-lingua).
+  if (m < 60) return t("há {tempo}").replace("{tempo}", `${m} ${m === 1 ? t("minuto") : t("minutos")}`);
   const h = Math.round(m / 60);
-  if (h < 24) return `${t("há")} ${h} ${h === 1 ? t("hora") : t("horas")}`;
+  if (h < 24) return t("há {tempo}").replace("{tempo}", `${h} ${h === 1 ? t("hora") : t("horas")}`);
   const d = Math.round(h / 24);
-  return `${t("há")} ${d} ${d === 1 ? t("dia") : t("dias")}`;
+  return t("há {tempo}").replace("{tempo}", `${d} ${d === 1 ? t("dia") : t("dias")}`);
 }
 
 function iniciais(nome: string): string {
