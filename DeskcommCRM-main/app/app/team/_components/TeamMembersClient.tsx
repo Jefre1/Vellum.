@@ -1,0 +1,263 @@
+"use client";
+
+import { MemberInterfaceDialog } from "@/components/team/MemberInterfaceDialog";
+import { useTagDeIdioma } from "@/hooks/i18n/useLocaleDeData";
+import { useState } from "react";
+import { toast } from "sonner";
+
+import { useT } from "@/hooks/i18n/useT";
+import { useTeamMembers, type TeamMember } from "@/hooks/team/useTeamMembers";
+import { useChangeRole } from "@/hooks/team/useChangeRole";
+import { useReactivateMember } from "@/hooks/team/useReactivateMember";
+import { useRevokeMember } from "@/hooks/team/useRevokeMember";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ROLES, type Role } from "@/lib/schemas/team";
+import { rotuloDoPapel } from "@/lib/auth/types";
+import { DotsThree } from "@/lib/ui/icons";
+import { rotuloDoMembro } from "@/lib/users/rotulo-do-atendente";
+
+interface Props {
+  currentUserId: string;
+  canManage: boolean;
+}
+
+export function TeamMembersClient({ currentUserId, canManage }: Props) {
+  const tagDoIdioma = useTagDeIdioma();
+  const t = useT();
+  const { data, isLoading, isError } = useTeamMembers();
+  const changeRole = useChangeRole();
+  const revoke = useRevokeMember();
+  const reativar = useReactivateMember();
+
+  const [interfaceMember, setInterfaceMember] = useState<TeamMember | null>(null);
+  const [revokeDialog, setRevokeDialog] = useState<TeamMember | null>(null);
+
+  if (isLoading) {
+    return <p className="text-sm text-muted-foreground">{t("Carregando…")}</p>;
+  }
+  if (isError) {
+    return <p className="text-sm text-destructive">{t("Erro ao carregar membros.")}</p>;
+  }
+  const members = data?.data ?? [];
+  if (members.length === 0) {
+    return <p className="text-sm text-muted-foreground">{t("Nenhum membro ativo.")}</p>;
+  }
+
+  return (
+    <>
+      <div className="rounded-md border">
+        <Table className="max-md:block">
+          <TableHeader className="max-md:hidden">
+            <TableRow>
+              <TableHead>{t("Membro")}</TableHead>
+              <TableHead>{t("Papel")}</TableHead>
+              <TableHead>{t("Interface")}</TableHead>
+              <TableHead>{t("Status")}</TableHead>
+              <TableHead>{t("Última atividade")}</TableHead>
+              {canManage ? <TableHead className="w-[80px]" /> : null}
+            </TableRow>
+          </TableHeader>
+          <TableBody className="max-md:block">
+            {members.map((m) => (
+              <TableRow
+                key={m.user_id}
+                className="max-md:flex max-md:flex-wrap max-md:items-center max-md:gap-x-3 max-md:px-4 max-md:py-2"
+              >
+                <TableCell className="max-md:basis-full max-md:p-0 max-md:wrap-anywhere">
+                  <div className="font-medium">
+                    {rotuloDoMembro(m, t)}
+                  </div>
+                  {m.email ? <div className="text-xs text-muted-foreground">{m.email}</div> : null}
+                </TableCell>
+                <TableCell className="max-md:p-0">
+                  {canManage && m.user_id !== currentUserId ? (
+                    <Select
+                      value={m.role}
+                      onValueChange={(v) =>
+                        changeRole.mutate({ userId: m.user_id, role: v as Role })
+                      }
+                    >
+                      <SelectTrigger
+                        className="w-[130px]"
+                        aria-label={`${t("Papel de")} ${rotuloDoMembro(m, t)}`}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ROLES.map((r) => (
+                          <SelectItem key={r} value={r}>
+                            {t(rotuloDoPapel(r))}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Badge variant="secondary">{t(rotuloDoPapel(m.role))}</Badge>
+                  )}
+                </TableCell>
+                <TableCell className="max-md:p-0">
+                  {canManage ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      aria-label={`${t("Interface de")} ${rotuloDoMembro(m, t)}`}
+                      onClick={() => setInterfaceMember(m)}
+                    >
+                      {m.interface_settings?.destinos
+                        ? t("Personalizada")
+                        : m.interface_settings?.preset === "simplificada"
+                          ? t("Simplificada")
+                          : t("Completa")}
+                    </Button>
+                  ) : (
+                    <span>
+                      {m.interface_settings?.destinos
+                        ? t("Personalizada")
+                        : m.interface_settings?.preset === "simplificada"
+                          ? t("Simplificada")
+                          : t("Completa")}
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell className="max-md:p-0">
+                  {/*
+                    "Revogado" vem ANTES dos outros dois: quem foi revogado tem
+                    `accepted_at` preenchido (ele aceitou um dia), e sem esta
+                    ordem apareceria como "Aceito" — dizendo o contrário do que
+                    é. Até 2026-09-10 a linha nem chegava aqui: a rota filtrava
+                    revogado fora e a pessoa simplesmente sumia da equipe.
+                  */}
+                  {m.revoked_at ? (
+                    <Badge variant="destructive">{t("Revogado")}</Badge>
+                  ) : m.accepted_at ? (
+                    <Badge variant="default">{t("Aceito")}</Badge>
+                  ) : (
+                    <Badge variant="outline">{t("Pendente")}</Badge>
+                  )}
+                </TableCell>
+                {/* No celular o cabeçalho some, e o rótulo vem do atributo. */}
+                <TableCell
+                  data-rotulo={t("Última atividade")}
+                  className="text-sm text-muted-foreground max-md:flex-auto max-md:p-0 max-md:text-xs max-md:before:mr-1 max-md:before:content-[attr(data-rotulo)]"
+                >
+                  {m.last_sign_in_at
+                    ? new Date(m.last_sign_in_at).toLocaleString(tagDoIdioma)
+                    : "—"}
+                </TableCell>
+                {canManage ? (
+                  <TableCell className="max-md:ml-auto max-md:p-0">
+                    {m.user_id !== currentUserId ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" aria-label={t("Ações")}>
+                            <DotsThree size={20} />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {/*
+                            Revogar e reativar são exclusivos: oferecer os dois
+                            na mesma linha convidaria ao clique errado. Sem o
+                            ramo de reativar, a única volta era emitir convite
+                            novo — caminho longo e cheio de beco, medido com
+                            uma pessoa de verdade presa nele em 2026-09-10.
+                          */}
+                          {m.revoked_at ? (
+                            <DropdownMenuItem
+                              disabled={reativar.isPending}
+                              onClick={() => void reativar.mutateAsync(m.user_id)}
+                            >
+                              {t("Devolver acesso")}
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => setRevokeDialog(m)}
+                            >
+                              {t("Revogar acesso")}
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">{t("você")}</span>
+                    )}
+                  </TableCell>
+                ) : null}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {interfaceMember && (
+        <MemberInterfaceDialog
+          key={interfaceMember.user_id}
+          member={interfaceMember}
+          onClose={() => setInterfaceMember(null)}
+        />
+      )}
+      <Dialog open={!!revokeDialog} onOpenChange={(o) => !o && setRevokeDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("Revogar acesso")}</DialogTitle>
+            <DialogDescription>
+              {revokeDialog?.email ?? revokeDialog?.user_id}{" "}
+              {t("perderá acesso ao tenant. Esta ação pode ser desfeita reconvidando o membro.")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setRevokeDialog(null)}>
+              {t("Cancelar")}
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={revoke.isPending}
+              onClick={async () => {
+                if (!revokeDialog) return;
+                try {
+                  await revoke.mutateAsync(revokeDialog.user_id);
+                  toast.success(t("Acesso revogado."));
+                  setRevokeDialog(null);
+                } catch {
+                  /* showApiError already triggered by the hook */
+                }
+              }}
+            >
+              {t("Revogar")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
