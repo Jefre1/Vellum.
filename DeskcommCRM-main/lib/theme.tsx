@@ -29,7 +29,11 @@ function readStoredTheme(): Theme {
   } catch {
     // localStorage indisponível (modo privado, sandbox) — segue com default.
   }
-  return "system";
+  // Sem escolha salva, o padrão é o tema CLARO (lilás), e não o do sistema:
+  // o lilás é a cara do produto. Quem quer seguir o sistema escolhe "system"
+  // no seletor, e a escolha passa a valer. O script de `app/layout.tsx`
+  // (`THEME_INIT_SCRIPT`) aplica a MESMA regra antes da primeira pintura.
+  return "light";
 }
 
 function getSystemTheme(): ResolvedTheme {

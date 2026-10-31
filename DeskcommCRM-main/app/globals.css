@@ -25,70 +25,70 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* ─────────────────────────────────────────────────────────────────────────
-   DeskcommCRM — Design System tokens (Sage palette · density Aerada)
-   Source of truth: /app/design/lib/tokens.ts (PALETTES.sage)
+   DeskcommCRM — Design System tokens (Lilás palette · vidro · density Aerada)
+   Paleta lilás (padrão) e escura, com tokens de vidro (`--glass-*`).
    Light + dark drawn separately (NOT inverted).
    ───────────────────────────────────────────────────────────────────────── */
 
 :root {
   /* Surfaces (light) */
-  --color-bg: #faf9f6;
+  --color-bg: #f5f2fc;
   --color-surface: #ffffff;
-  --color-surface-elevated: #f5f3ee;
-  --color-overlay: rgba(28, 26, 22, 0.42);
+  --color-surface-elevated: #f1edfb;
+  --color-overlay: rgba(30, 22, 60, 0.38);
 
   /* Text (light) */
-  --color-text: #1c1a16;
-  --color-text-muted: #5d594f;
-  --color-text-subtle: #7d786c;
+  --color-text: #1c1830;
+  --color-text-muted: #57516f;
+  --color-text-subtle: #736c8e;
 
   /* Borders (light) */
-  --color-border: #e7e3da;
-  --color-border-strong: #d2cdbf;
+  --color-border: #e4ddf3;
+  --color-border-strong: #cfc5e6;
 
-  /* Accent — Sage (11 stops) */
-  --color-accent-50: #f3f6f1;
-  --color-accent-100: #e4ebe0;
-  --color-accent-200: #c8d6c1;
-  --color-accent-300: #a4ba9a;
-  --color-accent-400: #82a077;
-  --color-accent-500: #67885d;
-  --color-accent-600: #506d48;
-  --color-accent-700: #41573b;
-  --color-accent-800: #374731;
-  --color-accent-900: #2f3c2b;
-  --color-accent-950: #171f15;
+  /* Accent — Lilás (11 stops) */
+  --color-accent-50: #f4f4ff;
+  --color-accent-100: #e8e7ff;
+  --color-accent-200: #d2cfff;
+  --color-accent-300: #b6adff;
+  --color-accent-400: #9d8cff;
+  --color-accent-500: #896bff;
+  --color-accent-600: #7351e3;
+  --color-accent-700: #5a43b0;
+  --color-accent-800: #49388b;
+  --color-accent-900: #3c3071;
+  --color-accent-950: #1c153b;
   --color-accent: var(--color-accent-600);
   --color-accent-fg: #ffffff;
   --color-accent-soft: var(--color-accent-100);
   --color-accent-hover: var(--color-accent-700);
 
-  /* Neutrals — greige (11 stops, light) */
-  --color-neutral-50: #faf9f6;
-  --color-neutral-100: #f3f1ec;
-  --color-neutral-200: #e7e3da;
-  --color-neutral-300: #d2cdbf;
-  --color-neutral-400: #a9a395;
-  --color-neutral-500: #7d786c;
-  --color-neutral-600: #5d594f;
-  --color-neutral-700: #46433b;
-  --color-neutral-800: #2e2c26;
-  --color-neutral-900: #1c1a16;
-  --color-neutral-950: #0e0d0a;
+  /* Neutrals — lavanda (11 stops, light) */
+  --color-neutral-50: #f8f6fd;
+  --color-neutral-100: #f1eef9;
+  --color-neutral-200: #e4ddf3;
+  --color-neutral-300: #cfc5e6;
+  --color-neutral-400: #a49cbd;
+  --color-neutral-500: #736c8e;
+  --color-neutral-600: #57516f;
+  --color-neutral-700: #423c58;
+  --color-neutral-800: #2b2640;
+  --color-neutral-900: #1c1830;
+  --color-neutral-950: #0e0b1a;
 
   /* States (light) */
-  --color-success: #5a8a5f;
-  --color-success-bg: rgba(90, 138, 95, 0.12);
-  --color-success-fg: #41673f;
-  --color-warning: #b07a2b;
-  --color-warning-bg: rgba(176, 122, 43, 0.12);
-  --color-warning-fg: #875a1a;
-  --color-error: #a94a3c;
-  --color-error-bg: rgba(169, 74, 60, 0.12);
-  --color-error-fg: #8a3a2e;
-  --color-info: #4a7a93;
-  --color-info-bg: rgba(74, 122, 147, 0.12);
-  --color-info-fg: #355d72;
+  --color-success: #1f9a63;
+  --color-success-bg: rgba(31, 154, 99, 0.12);
+  --color-success-fg: #13744a;
+  --color-warning: #c27712;
+  --color-warning-bg: rgba(194, 119, 18, 0.12);
+  --color-warning-fg: #8d540a;
+  --color-error: #c8414f;
+  --color-error-bg: rgba(200, 65, 79, 0.12);
+  --color-error-fg: #a32c3a;
+  --color-info: #0b87a8;
+  --color-info-bg: rgba(11, 135, 168, 0.12);
+  --color-info-fg: #08657f;
 
   /* Spacing (4-base) */
   --space-0: 0px;
@@ -108,18 +108,18 @@
 
   /* Radius */
   --radius-none: 0px;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* Shadows — desaturated, neutral-based */
-  --shadow-xs: 0 1px 2px 0 rgba(20, 18, 14, 0.04);
-  --shadow-sm: 0 1px 2px 0 rgba(20, 18, 14, 0.05), 0 1px 1px 0 rgba(20, 18, 14, 0.03);
-  --shadow-md: 0 4px 12px -2px rgba(20, 18, 14, 0.06), 0 2px 4px -1px rgba(20, 18, 14, 0.04);
-  --shadow-lg: 0 12px 32px -6px rgba(20, 18, 14, 0.1), 0 4px 12px -2px rgba(20, 18, 14, 0.06);
-  --shadow-xl: 0 24px 48px -12px rgba(20, 18, 14, 0.16), 0 8px 16px -4px rgba(20, 18, 14, 0.08);
+  /* Shadows — suaves, tingidas de lilás */
+  --shadow-xs: 0 1px 2px 0 rgba(60, 40, 140, 0.05);
+  --shadow-sm: 0 2px 6px -1px rgba(60, 40, 140, 0.07), 0 1px 2px 0 rgba(60, 40, 140, 0.04);
+  --shadow-md: 0 10px 30px -10px rgba(60, 40, 140, 0.16), 0 2px 6px -2px rgba(60, 40, 140, 0.06);
+  --shadow-lg: 0 20px 48px -14px rgba(60, 40, 140, 0.22), 0 6px 16px -6px rgba(60, 40, 140, 0.08);
+  --shadow-xl: 0 32px 64px -16px rgba(60, 40, 140, 0.28), 0 10px 24px -8px rgba(60, 40, 140, 0.1);
 
   /* Density — Aerada */
   --density-row: 56px;
@@ -227,6 +227,19 @@
   --agenda-pessoa-6: #608bda; /* índigo */
   --agenda-pessoa-7: #7b5bad; /* violeta */
   --agenda-pessoa-8: #cc77b1; /* framboesa */
+  /* ---- Vidro e luz de fundo (tema lilás) ------------------------------
+   * O vidro é o desenho das superfícies grandes (barra lateral, barra do
+   * topo, cards). Os tokens HEX acima continuam sendo a régua de contraste:
+   * o vidro só deixa ver o fundo, e o texto sobre ele é medido contra
+   * `--color-surface`, que é a cor que o vidro tende a mostrar.
+   */
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-bg-strong: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+  --bg-glow-1: rgba(167, 139, 250, 0.32);
+  --bg-glow-2: rgba(244, 170, 230, 0.26);
+  --bg-glow-3: rgba(147, 197, 253, 0.22);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -263,47 +276,47 @@
    (lib/branding/css.ts), que só ganha consumidor com a tela de marca.
    ───────────────────────────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --color-bg: #faf9f6;
+  --color-bg: #f5f2fc;
   --color-surface: #ffffff;
-  --color-surface-elevated: #f5f3ee;
-  --color-overlay: rgba(28, 26, 22, 0.42);
-  --color-text: #1c1a16;
-  --color-text-muted: #5d594f;
-  --color-text-subtle: #7d786c;
-  --color-border: #e7e3da;
-  --color-border-strong: #d2cdbf;
+  --color-surface-elevated: #f1edfb;
+  --color-overlay: rgba(30, 22, 60, 0.38);
+  --color-text: #1c1830;
+  --color-text-muted: #57516f;
+  --color-text-subtle: #736c8e;
+  --color-border: #e4ddf3;
+  --color-border-strong: #cfc5e6;
   --color-accent: var(--color-accent-600);
   --color-accent-fg: #ffffff;
   --color-accent-soft: var(--color-accent-100);
   --color-accent-hover: var(--color-accent-700);
-  --color-neutral-50: #faf9f6;
-  --color-neutral-100: #f3f1ec;
-  --color-neutral-200: #e7e3da;
-  --color-neutral-300: #d2cdbf;
-  --color-neutral-400: #a9a395;
-  --color-neutral-500: #7d786c;
-  --color-neutral-600: #5d594f;
-  --color-neutral-700: #46433b;
-  --color-neutral-800: #2e2c26;
-  --color-neutral-900: #1c1a16;
-  --color-neutral-950: #0e0d0a;
-  --color-success: #5a8a5f;
-  --color-success-bg: rgba(90, 138, 95, 0.12);
-  --color-success-fg: #41673f;
-  --color-warning: #b07a2b;
-  --color-warning-bg: rgba(176, 122, 43, 0.12);
-  --color-warning-fg: #875a1a;
-  --color-error: #a94a3c;
-  --color-error-bg: rgba(169, 74, 60, 0.12);
-  --color-error-fg: #8a3a2e;
-  --color-info: #4a7a93;
-  --color-info-bg: rgba(74, 122, 147, 0.12);
-  --color-info-fg: #355d72;
-  --shadow-xs: 0 1px 2px 0 rgba(20, 18, 14, 0.04);
-  --shadow-sm: 0 1px 2px 0 rgba(20, 18, 14, 0.05), 0 1px 1px 0 rgba(20, 18, 14, 0.03);
-  --shadow-md: 0 4px 12px -2px rgba(20, 18, 14, 0.06), 0 2px 4px -1px rgba(20, 18, 14, 0.04);
-  --shadow-lg: 0 12px 32px -6px rgba(20, 18, 14, 0.1), 0 4px 12px -2px rgba(20, 18, 14, 0.06);
-  --shadow-xl: 0 24px 48px -12px rgba(20, 18, 14, 0.16), 0 8px 16px -4px rgba(20, 18, 14, 0.08);
+  --color-neutral-50: #f8f6fd;
+  --color-neutral-100: #f1eef9;
+  --color-neutral-200: #e4ddf3;
+  --color-neutral-300: #cfc5e6;
+  --color-neutral-400: #a49cbd;
+  --color-neutral-500: #736c8e;
+  --color-neutral-600: #57516f;
+  --color-neutral-700: #423c58;
+  --color-neutral-800: #2b2640;
+  --color-neutral-900: #1c1830;
+  --color-neutral-950: #0e0b1a;
+  --color-success: #1f9a63;
+  --color-success-bg: rgba(31, 154, 99, 0.12);
+  --color-success-fg: #13744a;
+  --color-warning: #c27712;
+  --color-warning-bg: rgba(194, 119, 18, 0.12);
+  --color-warning-fg: #8d540a;
+  --color-error: #c8414f;
+  --color-error-bg: rgba(200, 65, 79, 0.12);
+  --color-error-fg: #a32c3a;
+  --color-info: #0b87a8;
+  --color-info-bg: rgba(11, 135, 168, 0.12);
+  --color-info-fg: #08657f;
+  --shadow-xs: 0 1px 2px 0 rgba(60, 40, 140, 0.05);
+  --shadow-sm: 0 2px 6px -1px rgba(60, 40, 140, 0.07), 0 1px 2px 0 rgba(60, 40, 140, 0.04);
+  --shadow-md: 0 10px 30px -10px rgba(60, 40, 140, 0.16), 0 2px 6px -2px rgba(60, 40, 140, 0.06);
+  --shadow-lg: 0 20px 48px -14px rgba(60, 40, 140, 0.22), 0 6px 16px -6px rgba(60, 40, 140, 0.08);
+  --shadow-xl: 0 32px 64px -16px rgba(60, 40, 140, 0.28), 0 10px 24px -8px rgba(60, 40, 140, 0.1);
   --background: var(--color-bg);
   --foreground: var(--color-text);
   --card: var(--color-surface);
@@ -337,67 +350,80 @@
   --agenda-pessoa-6: #608bda; /* índigo */
   --agenda-pessoa-7: #7b5bad; /* violeta */
   --agenda-pessoa-8: #cc77b1; /* framboesa */
+  /* ---- Vidro e luz de fundo (tema lilás) ------------------------------
+   * O vidro é o desenho das superfícies grandes (barra lateral, barra do
+   * topo, cards). Os tokens HEX acima continuam sendo a régua de contraste:
+   * o vidro só deixa ver o fundo, e o texto sobre ele é medido contra
+   * `--color-surface`, que é a cor que o vidro tende a mostrar.
+   */
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-bg-strong: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+  --bg-glow-1: rgba(167, 139, 250, 0.32);
+  --bg-glow-2: rgba(244, 170, 230, 0.26);
+  --bg-glow-3: rgba(147, 197, 253, 0.22);
 }
 
 [data-theme="dark"] {
   /* Surfaces (dark — drawn) */
-  --color-bg: #161510;
-  --color-surface: #1d1c17;
-  --color-surface-elevated: #272620;
-  --color-overlay: rgba(0, 0, 0, 0.55);
+  --color-bg: #110f1b;
+  --color-surface: #1a1727;
+  --color-surface-elevated: #242036;
+  --color-overlay: rgba(4, 2, 12, 0.6);
 
   /* Text (dark) */
-  --color-text: #f5f4ef;
-  --color-text-muted: #8e8b7f;
-  --color-text-subtle: #605e54;
+  --color-text: #f3f1fb;
+  --color-text-muted: #a7a1c2;
+  --color-text-subtle: #7c7699;
 
   /* Borders (dark) */
-  --color-border: #33312a;
-  --color-border-strong: #444239;
+  --color-border: #2f2a45;
+  --color-border-strong: #403a5c;
 
   /* Accent stays same hex stops; default shifts up for dark contrast */
-  --color-accent-50: #f3f6f1;
-  --color-accent-100: #e4ebe0;
-  --color-accent-200: #c8d6c1;
-  --color-accent-300: #a4ba9a;
-  --color-accent-400: #82a077;
-  --color-accent-500: #67885d;
-  --color-accent-600: #506d48;
-  --color-accent-700: #41573b;
-  --color-accent-800: #374731;
-  --color-accent-900: #2f3c2b;
-  --color-accent-950: #171f15;
+  --color-accent-50: #f4f4ff;
+  --color-accent-100: #e8e7ff;
+  --color-accent-200: #d2cfff;
+  --color-accent-300: #b6adff;
+  --color-accent-400: #9d8cff;
+  --color-accent-500: #896bff;
+  --color-accent-600: #7351e3;
+  --color-accent-700: #5a43b0;
+  --color-accent-800: #49388b;
+  --color-accent-900: #3c3071;
+  --color-accent-950: #1c153b;
   --color-accent: var(--color-accent-400);
-  --color-accent-fg: #161510;
-  --color-accent-soft: rgba(130, 160, 119, 0.16);
+  --color-accent-fg: #110f1b;
+  --color-accent-soft: rgba(157, 140, 255, 0.16);
   --color-accent-hover: var(--color-accent-300);
 
-  /* Neutrals — greige (11 stops, dark) */
-  --color-neutral-50: #f5f4ef;
-  --color-neutral-100: #e6e4dc;
-  --color-neutral-200: #bbb8ac;
-  --color-neutral-300: #8e8b7f;
-  --color-neutral-400: #605e54;
-  --color-neutral-500: #444239;
-  --color-neutral-600: #33312a;
-  --color-neutral-700: #272620;
-  --color-neutral-800: #1d1c17;
-  --color-neutral-900: #161510;
-  --color-neutral-950: #0c0b08;
+  /* Neutrals — lavanda (11 stops, dark) */
+  --color-neutral-50: #f3f1fb;
+  --color-neutral-100: #e3dff2;
+  --color-neutral-200: #bdb7d6;
+  --color-neutral-300: #a7a1c2;
+  --color-neutral-400: #7c7699;
+  --color-neutral-500: #403a5c;
+  --color-neutral-600: #2f2a45;
+  --color-neutral-700: #242036;
+  --color-neutral-800: #1a1727;
+  --color-neutral-900: #110f1b;
+  --color-neutral-950: #08070f;
 
   /* States (dark) */
-  --color-success: #82a077;
-  --color-success-bg: rgba(130, 160, 119, 0.18);
-  --color-success-fg: #a4ba9a;
-  --color-warning: #d09455;
-  --color-warning-bg: rgba(208, 148, 85, 0.18);
-  --color-warning-fg: #e0ad77;
-  --color-error: #c87263;
-  --color-error-bg: rgba(200, 114, 99, 0.18);
-  --color-error-fg: #d99182;
-  --color-info: #7da9bf;
-  --color-info-bg: rgba(125, 169, 191, 0.18);
-  --color-info-fg: #9bbfd2;
+  --color-success: #4cc98f;
+  --color-success-bg: rgba(76, 201, 143, 0.16);
+  --color-success-fg: #7fdcb0;
+  --color-warning: #e3a04a;
+  --color-warning-bg: rgba(227, 160, 74, 0.16);
+  --color-warning-fg: #f0bf7d;
+  --color-error: #f07583;
+  --color-error-bg: rgba(240, 117, 131, 0.16);
+  --color-error-fg: #f6a0aa;
+  --color-info: #4fc6e3;
+  --color-info-bg: rgba(79, 198, 227, 0.16);
+  --color-info-fg: #8adcf0;
 
   /* Shadows — heavier in dark */
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -437,6 +463,14 @@
   --agenda-pessoa-6: #6c97e7;
   --agenda-pessoa-7: #be9ef6;
   --agenda-pessoa-8: #cc77b1;
+  /* ---- Vidro e luz de fundo (tema escuro) ---------------------------- */
+  --glass-bg: rgba(30, 26, 48, 0.58);
+  --glass-bg-strong: rgba(30, 26, 48, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  --bg-glow-1: rgba(124, 92, 240, 0.24);
+  --bg-glow-2: rgba(214, 90, 190, 0.14);
+  --bg-glow-3: rgba(70, 120, 230, 0.14);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -476,7 +510,7 @@
   --color-text-muted: var(--color-text-muted);
   --color-text-subtle: var(--color-text-subtle);
 
-  /* Accent — Sage */
+  /* Accent — Lilás */
   --color-accent: var(--color-accent);
   --color-accent-foreground: var(--color-accent-fg);
   --color-accent-soft: var(--color-accent-soft);
@@ -493,7 +527,7 @@
   --color-accent-900: var(--color-accent-900);
   --color-accent-950: var(--color-accent-950);
 
-  /* Neutrals — greige */
+  /* Neutrals — lavanda */
   --color-neutral-50: var(--color-neutral-50);
   --color-neutral-100: var(--color-neutral-100);
   --color-neutral-200: var(--color-neutral-200);
@@ -623,6 +657,30 @@
    para a mesma coisa foi exatamente o defeito da issue #1305. */
 @utility pb-area-segura {
   padding-bottom: max(var(--space-6), env(safe-area-inset-bottom, 0px));
+}
+
+/* ---- Vidro (tema lilás) -----------------------------------------------------
+   Superfície translúcida com desfoque do que está atrás — o desenho da barra
+   lateral, da barra do topo e dos cards do Dashboard. As cores vêm dos tokens
+   `--glass-*`, então claro e escuro saem do mesmo utilitário.
+
+   `glass` é o painel comum; `glass-strong` é o que precisa de mais corpo
+   (cabeçalho grudado, menu), onde o conteúdo rola por baixo e a leitura não
+   pode depender do que passa atrás. Sem suporte a `backdrop-filter`, o fundo
+   semiopaco já basta para a leitura. */
+@utility glass {
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight), var(--shadow-md);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+}
+@utility glass-strong {
+  background-color: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight), var(--shadow-sm);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
 }
 
 /* ---- Alvo de 44px SEM mexer no desenho -------------------------------------
@@ -781,6 +839,15 @@
     overflow-x: hidden;
     overflow-x: clip;
     background-color: var(--color-bg);
+    /* A luz lilás atrás do vidro. Fixa na janela (`background-attachment`),
+       para o vidro das barras ter sempre o mesmo fundo para desfocar enquanto
+       a página rola. Só imagem: a cor de fundo continua sendo o token, e é ela
+       que a régua de contraste mede. */
+    background-image:
+      radial-gradient(60rem 40rem at 0% 0%, var(--bg-glow-1), transparent 60%),
+      radial-gradient(50rem 36rem at 100% 0%, var(--bg-glow-2), transparent 60%),
+      radial-gradient(56rem 40rem at 70% 100%, var(--bg-glow-3), transparent 60%);
+    background-attachment: fixed;
     color: var(--color-text);
     font-family:
       var(--font-atkinson),
@@ -820,7 +887,7 @@
     color: var(--color-accent-50);
   }
 
-  /* Focus ring: Sage 500/400, 2px with offset */
+  /* Focus ring: Lilás 500/400, 2px with offset */
   :focus-visible {
     outline: 2px solid var(--color-accent-500);
     outline-offset: 2px;
@@ -855,7 +922,7 @@
     }
   }
 
-  /* Scrollbar — subtle greige */
+  /* Scrollbar — lavanda sutil */
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-neutral-300) transparent;
