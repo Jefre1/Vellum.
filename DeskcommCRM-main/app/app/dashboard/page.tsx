@@ -41,7 +41,7 @@ export default async function DashboardPage({
 
   return (
     <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-5">
-      <header className="flex flex-wrap items-end justify-between gap-3">
+      <header className="sobre-o-fundo flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
           <h1 className="text-3xl font-bold tracking-tight text-text sm:text-4xl">
             {primeiroNome ? `${t("Olá")}, ${primeiroNome}!` : `${t("Olá")}!`}

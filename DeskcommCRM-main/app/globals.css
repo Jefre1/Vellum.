@@ -771,6 +771,12 @@
 [data-theme][data-fundo="escuro"] {
   --bg-wallpaper: url("/fundos/lilas-escuro.webp");
 }
+/* Texto que fica DIRETO sobre o wallpaper (o cabeçalho do Dashboard): no
+   Noite o texto preto do tema claro sumiria no fundo escuro. */
+[data-fundo="escuro"] .sobre-o-fundo > :first-child {
+  --color-text: #ffffff;
+  --color-text-muted: rgba(255, 255, 255, 0.86);
+}
 
 /* ---- Cards translúcidos sobre o wallpaper (84%) --------------------------
    Os hex de superfície seguem sendo a régua de contraste; aqui só a PINTURA

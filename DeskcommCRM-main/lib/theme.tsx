@@ -46,6 +46,9 @@ function getSystemTheme(): ResolvedTheme {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+/** Ligado por `gravarTema` (troca feita pela pessoa); consumido por `applyTheme`. */
+let animarProximaTroca = false;
+
 function applyTheme(resolved: ResolvedTheme, fundoEscuro = false) {
   if (typeof document === "undefined") return;
   const raiz = document.documentElement;
@@ -61,9 +64,16 @@ function applyTheme(resolved: ResolvedTheme, fundoEscuro = false) {
   // wallpaper incluído (imagem de fundo não anima por `transition`). A
   // duração mora em `app/globals.css` (`::view-transition-*(root)`). Sem a API
   // (navegador antigo) ou com movimento reduzido, troca na hora, como antes.
+  //
+  // ⚠️ SÓ quando a PESSOA trocou (`animarProximaTroca`, ligado em `gravarTema`).
+  // Na carga, a hidratação aplica o tema provisório e logo depois o salvo; com
+  // as duas animadas, a primeira terminava por último e o tema salvo se perdia
+  // (escuro salvo → tela clara). Fora do clique, a troca é síncrona e em ordem.
+  const animar = animarProximaTroca;
+  animarProximaTroca = false;
   const reduzido = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
-  if (doc.startViewTransition && !reduzido) doc.startViewTransition(aplicar);
+  if (animar && doc.startViewTransition && !reduzido) doc.startViewTransition(aplicar);
   else aplicar();
 }
 
@@ -110,6 +120,7 @@ function inscreverEmTema(ouvinte: Ouvinte): () => void {
   return () => ouvintesDeTema.delete(ouvinte);
 }
 function gravarTema(next: Theme) {
+  animarProximaTroca = true;
   temaEmCache = next;
   try {
     window.localStorage.setItem(STORAGE_KEY, next);
