@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
 import { BarraInferior } from "@/components/shell/BarraInferior";
@@ -48,6 +50,10 @@ export function AppShell({ sidebarCollapsed, podeAtender, children }: AppShellPr
   // o `p-6` inteiro é rodapé. Com o painel de chamada na tela, é ele que
   // decide a faixa que o conteúdo perde, e ninguém mais mede isso por fora.
   const ocupacaoDoRodape = useOcupacaoDoRodape();
+  // O Dashboard desenha os próprios painéis sobre o wallpaper; nas outras telas
+  // o conteúdo fica sobre o painel da página (60%), para texto nunca encostar
+  // direto no fundo.
+  const semPainelDaPagina = usePathname() === "/app/dashboard";
   return (
     /*
       `min-h-dvh`, e não `min-h-screen`: `100vh` no celular é a janela com a
@@ -110,7 +116,13 @@ export function AppShell({ sidebarCollapsed, podeAtender, children }: AppShellPr
           peça fixa quem cobre isso é o terceiro termo do `max()` do contrato.
         */}
         <main
-          className="painel-pagina mr-3 flex-1 overflow-auto rounded-xl p-4 pb-area-segura sm:p-6 md:mr-6"
+          className={cn(
+            // `mx-3 mb-3`: o painel não encosta na barra lateral nem no rodapé.
+            // Os 0.75rem de baixo entram no `calc()` de altura do Inbox, dos
+            // Casos e do quadro do pipeline.
+            "mx-3 mb-3 flex-1 overflow-auto rounded-xl p-4 pb-area-segura sm:p-6",
+            !semPainelDaPagina && "painel-pagina",
+          )}
           style={estiloDaReserva(ocupacaoDoRodape)}
           data-rodape-ocupado={ocupacaoDoRodape}
         >
