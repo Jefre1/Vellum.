@@ -2,7 +2,12 @@
 
 import * as React from "react";
 
-export type Theme = "light" | "dark" | "system";
+/**
+ * `noite`: o tema CLARO com o wallpaper escuro atrás (painéis claros sobre
+ * fundo escuro). Para todo o resto do produto ele é "light" — `resolvedTheme`
+ * nunca vale "noite"; só o atributo `data-fundo` muda.
+ */
+export type Theme = "light" | "dark" | "noite" | "system";
 export type ResolvedTheme = "light" | "dark";
 
 // Exportada para o teste reusar em vez de duplicar o literal — duplicar
@@ -25,7 +30,7 @@ function readStoredTheme(): Theme {
   if (typeof window === "undefined") return "system";
   try {
     const v = window.localStorage.getItem(STORAGE_KEY);
-    if (v === "light" || v === "dark" || v === "system") return v;
+    if (v === "light" || v === "dark" || v === "noite" || v === "system") return v;
   } catch {
     // localStorage indisponível (modo privado, sandbox) — segue com default.
   }
@@ -41,9 +46,11 @@ function getSystemTheme(): ResolvedTheme {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-function applyTheme(resolved: ResolvedTheme) {
+function applyTheme(resolved: ResolvedTheme, fundoEscuro = false) {
   if (typeof document === "undefined") return;
   document.documentElement.setAttribute("data-theme", resolved);
+  if (fundoEscuro) document.documentElement.setAttribute("data-fundo", "escuro");
+  else document.documentElement.removeAttribute("data-fundo");
 }
 
 /**
@@ -124,14 +131,20 @@ function inscreverEmSistema(ouvinte: Ouvinte): () => void {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const theme = React.useSyncExternalStore(inscreverEmTema, getTemaSnapshot, getTemaSnapshotDoServidor);
+  const theme = React.useSyncExternalStore(
+    inscreverEmTema,
+    getTemaSnapshot,
+    getTemaSnapshotDoServidor,
+  );
   const systemTheme = React.useSyncExternalStore(
     inscreverEmSistema,
     getSistemaSnapshot,
     getSistemaSnapshotDoServidor,
   );
 
-  const resolvedTheme: ResolvedTheme = theme === "system" ? systemTheme : theme;
+  const resolvedTheme: ResolvedTheme =
+    theme === "system" ? systemTheme : theme === "noite" ? "light" : theme;
+  const fundoEscuro = theme === "noite";
 
   // Aplica no DOM sempre que o tema efetivo muda. Isto não é "ler estado
   // externo" (o que o external store acima já cobre) — é o único jeito de
@@ -139,8 +152,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // valor computado, e por isso continua em `useEffect`, sem aviso: aqui não
   // há `setState`, só uma chamada de DOM.
   React.useEffect(() => {
-    applyTheme(resolvedTheme);
-  }, [resolvedTheme]);
+    applyTheme(resolvedTheme, fundoEscuro);
+  }, [resolvedTheme, fundoEscuro]);
 
   const setTheme = React.useCallback((next: Theme) => {
     gravarTema(next);
@@ -148,7 +161,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const toggle = React.useCallback(() => {
     const atual = getTemaSnapshot();
-    const resolvidoAtual = atual === "system" ? getSistemaSnapshot() : atual;
+    const resolvidoAtual =
+      atual === "system" ? getSistemaSnapshot() : atual === "noite" ? "light" : atual;
     gravarTema(resolvidoAtual === "dark" ? "light" : "dark");
   }, []);
 

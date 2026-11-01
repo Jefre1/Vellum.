@@ -474,11 +474,12 @@
   --agenda-pessoa-7: #be9ef6;
   --agenda-pessoa-8: #cc77b1;
   /* ---- Vidro e luz de fundo (tema escuro) ---------------------------- */
-  --glass-bg: rgba(30, 26, 48, 0.58);
-  --glass-bg-strong: rgba(30, 26, 48, 0.82);
-  --bg-wallpaper: none;
-  --page-bg: transparent;
-  --card-bg: var(--color-surface);
+  --glass-bg: rgba(22, 18, 46, 0.66);
+  --glass-bg-strong: rgba(22, 18, 46, 0.8);
+  /* O wallpaper escuro (public/fundos/lilas-escuro.webp). */
+  --bg-wallpaper: url("/fundos/lilas-escuro.webp");
+  --page-bg: rgba(12, 10, 30, 0.55);
+  --card-bg: rgba(24, 20, 50, 0.78);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   --bg-glow-1: rgba(124, 92, 240, 0.24);
@@ -756,12 +757,20 @@
   }
 }
 
-/* ---- Cards translúcidos no tema claro (84%) -----------------------------
+/* ---- Modo "Noite": painéis claros sobre o wallpaper escuro ---------------
+   É o tema CLARO inteiro (tokens, contraste, painéis) com um fundo só trocado.
+   Quem liga é `lib/theme.tsx`, gravando `data-fundo="escuro"` no <html>.
+   `[data-theme][data-fundo]` tem especificidade maior que o bloco claro. */
+[data-theme][data-fundo="escuro"] {
+  --bg-wallpaper: url("/fundos/lilas-escuro.webp");
+}
+
+/* ---- Cards translúcidos sobre o wallpaper (84%) --------------------------
    Os hex de superfície seguem sendo a régua de contraste; aqui só a PINTURA
    de quem usa `bg-card`/`bg-surface` vira vidro. Popover, menu e modal
    (`ds-painel`, `ds-modal`) ficam sólidos: leem sobre conteúdo, não sobre o
    fundo. */
-[data-theme="light"] :is(.bg-card, .bg-surface):not(.ds-painel, .ds-modal) {
+[data-theme] :is(.bg-card, .bg-surface):not(.ds-painel, .ds-modal) {
   background-color: var(--card-bg);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
   backdrop-filter: blur(16px) saturate(150%);
