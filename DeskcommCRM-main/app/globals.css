@@ -757,6 +757,13 @@
   }
 }
 
+/* ---- Troca de tema suave (View Transitions, ver `applyTheme`) ----------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 520ms;
+  animation-timing-function: var(--ease-in-out);
+}
+
 /* ---- Modo "Noite": painéis claros sobre o wallpaper escuro ---------------
    É o tema CLARO inteiro (tokens, contraste, painéis) com um fundo só trocado.
    Quem liga é `lib/theme.tsx`, gravando `data-fundo="escuro"` no <html>.

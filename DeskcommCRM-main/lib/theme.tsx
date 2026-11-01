@@ -48,9 +48,23 @@ function getSystemTheme(): ResolvedTheme {
 
 function applyTheme(resolved: ResolvedTheme, fundoEscuro = false) {
   if (typeof document === "undefined") return;
-  document.documentElement.setAttribute("data-theme", resolved);
-  if (fundoEscuro) document.documentElement.setAttribute("data-fundo", "escuro");
-  else document.documentElement.removeAttribute("data-fundo");
+  const raiz = document.documentElement;
+  const mudou =
+    raiz.getAttribute("data-theme") !== resolved || raiz.hasAttribute("data-fundo") !== fundoEscuro;
+  if (!mudou) return;
+  const aplicar = () => {
+    raiz.setAttribute("data-theme", resolved);
+    if (fundoEscuro) raiz.setAttribute("data-fundo", "escuro");
+    else raiz.removeAttribute("data-fundo");
+  };
+  // Troca SUAVE: a View Transitions API faz o cross-fade da tela inteira,
+  // wallpaper incluído (imagem de fundo não anima por `transition`). A
+  // duração mora em `app/globals.css` (`::view-transition-*(root)`). Sem a API
+  // (navegador antigo) ou com movimento reduzido, troca na hora, como antes.
+  const reduzido = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
+  if (doc.startViewTransition && !reduzido) doc.startViewTransition(aplicar);
+  else aplicar();
 }
 
 /**
