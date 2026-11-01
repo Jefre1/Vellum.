@@ -110,7 +110,7 @@ export function AppShell({ sidebarCollapsed, podeAtender, children }: AppShellPr
           peça fixa quem cobre isso é o terceiro termo do `max()` do contrato.
         */}
         <main
-          className="flex-1 overflow-auto p-4 pb-area-segura sm:p-6"
+          className="painel-pagina mr-3 flex-1 overflow-auto rounded-xl p-4 pb-area-segura sm:p-6 md:mr-6"
           style={estiloDaReserva(ocupacaoDoRodape)}
           data-rodape-ocupado={ocupacaoDoRodape}
         >

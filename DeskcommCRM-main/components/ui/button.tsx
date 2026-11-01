@@ -46,7 +46,7 @@ const buttonVariants = cva(
         secondary:
           "bg-surface-elevated text-text border border-border hover:border-accent hover:text-accent",
         outline:
-          "bg-transparent text-text border border-border hover:border-accent hover:text-accent",
+          "bg-surface text-text border border-border hover:border-accent hover:text-accent",
         ghost: "bg-transparent text-text hover:bg-accent-soft hover:text-accent",
         destructive: "bg-error text-white hover:brightness-95 shadow-xs",
         link: "bg-transparent text-accent underline underline-offset-4 decoration-1 hover:decoration-2 h-auto p-0",

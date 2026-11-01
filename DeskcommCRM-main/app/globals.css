@@ -237,6 +237,9 @@
   --glass-bg-strong: rgba(255, 255, 255, 0.92);
   /* O wallpaper lilás do tema claro (public/fundos/lilas-claro.webp). */
   --bg-wallpaper: url("/fundos/lilas-claro.webp");
+  /* Painel da página (60%) e dos cards/controles (84%) sobre o wallpaper. */
+  --page-bg: rgba(255, 255, 255, 0.6);
+  --card-bg: rgba(255, 255, 255, 0.84);
   --glass-border: rgba(255, 255, 255, 0.75);
   --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
   --bg-glow-1: rgba(167, 139, 250, 0.32);
@@ -362,6 +365,9 @@
   --glass-bg-strong: rgba(255, 255, 255, 0.92);
   /* O wallpaper lilás do tema claro (public/fundos/lilas-claro.webp). */
   --bg-wallpaper: url("/fundos/lilas-claro.webp");
+  /* Painel da página (60%) e dos cards/controles (84%) sobre o wallpaper. */
+  --page-bg: rgba(255, 255, 255, 0.6);
+  --card-bg: rgba(255, 255, 255, 0.84);
   --glass-border: rgba(255, 255, 255, 0.75);
   --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
   --bg-glow-1: rgba(167, 139, 250, 0.32);
@@ -471,6 +477,8 @@
   --glass-bg: rgba(30, 26, 48, 0.58);
   --glass-bg-strong: rgba(30, 26, 48, 0.82);
   --bg-wallpaper: none;
+  --page-bg: transparent;
+  --card-bg: var(--color-surface);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   --bg-glow-1: rgba(124, 92, 240, 0.24);
@@ -680,6 +688,13 @@
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   backdrop-filter: blur(20px) saturate(160%);
 }
+/* Painel da página: todo o conteúdo de uma tela fica sobre ele, para nenhum
+   texto encostar direto no wallpaper (pedido do redesign: no mínimo 60%). */
+@utility painel-pagina {
+  background-color: var(--page-bg);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+}
 @utility glass-strong {
   background-color: var(--glass-bg-strong);
   border: 1px solid var(--glass-border);
@@ -739,6 +754,17 @@
     width: 2.75rem;
     height: 2.75rem;
   }
+}
+
+/* ---- Cards translúcidos no tema claro (84%) -----------------------------
+   Os hex de superfície seguem sendo a régua de contraste; aqui só a PINTURA
+   de quem usa `bg-card`/`bg-surface` vira vidro. Popover, menu e modal
+   (`ds-painel`, `ds-modal`) ficam sólidos: leem sobre conteúdo, não sobre o
+   fundo. */
+[data-theme="light"] :is(.bg-card, .bg-surface):not(.ds-painel, .ds-modal) {
+  background-color: var(--card-bg);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  backdrop-filter: blur(16px) saturate(150%);
 }
 
 @layer base {
