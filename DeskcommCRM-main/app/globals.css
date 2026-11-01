@@ -38,9 +38,9 @@
   --color-overlay: rgba(30, 22, 60, 0.38);
 
   /* Text (light) */
-  --color-text: #1c1830;
-  --color-text-muted: #57516f;
-  --color-text-subtle: #736c8e;
+  --color-text: #0b0a12;
+  --color-text-muted: #24212f;
+  --color-text-subtle: #3d394b;
 
   /* Borders (light) */
   --color-border: #e4ddf3;
@@ -233,8 +233,8 @@
    * o vidro só deixa ver o fundo, e o texto sobre ele é medido contra
    * `--color-surface`, que é a cor que o vidro tende a mostrar.
    */
-  --glass-bg: rgba(255, 255, 255, 0.5);
-  --glass-bg-strong: rgba(255, 255, 255, 0.66);
+  --glass-bg: rgba(255, 255, 255, 0.84);
+  --glass-bg-strong: rgba(255, 255, 255, 0.92);
   /* O wallpaper lilás do tema claro (public/fundos/lilas-claro.webp). */
   --bg-wallpaper: url("/fundos/lilas-claro.webp");
   --glass-border: rgba(255, 255, 255, 0.75);
@@ -282,9 +282,9 @@
   --color-surface: #ffffff;
   --color-surface-elevated: #f1edfb;
   --color-overlay: rgba(30, 22, 60, 0.38);
-  --color-text: #1c1830;
-  --color-text-muted: #57516f;
-  --color-text-subtle: #736c8e;
+  --color-text: #0b0a12;
+  --color-text-muted: #24212f;
+  --color-text-subtle: #3d394b;
   --color-border: #e4ddf3;
   --color-border-strong: #cfc5e6;
   --color-accent: var(--color-accent-600);
@@ -358,8 +358,8 @@
    * o vidro só deixa ver o fundo, e o texto sobre ele é medido contra
    * `--color-surface`, que é a cor que o vidro tende a mostrar.
    */
-  --glass-bg: rgba(255, 255, 255, 0.5);
-  --glass-bg-strong: rgba(255, 255, 255, 0.66);
+  --glass-bg: rgba(255, 255, 255, 0.84);
+  --glass-bg-strong: rgba(255, 255, 255, 0.92);
   /* O wallpaper lilás do tema claro (public/fundos/lilas-claro.webp). */
   --bg-wallpaper: url("/fundos/lilas-claro.webp");
   --glass-border: rgba(255, 255, 255, 0.75);
