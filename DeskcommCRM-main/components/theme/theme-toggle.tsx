@@ -24,16 +24,10 @@ export function ThemeToggle({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
 
   const cycle = () => {
-    // claro → noite (painéis claros, fundo escuro) → escuro → sistema → claro
-    setTheme(
-      theme === "light"
-        ? "noite"
-        : theme === "noite"
-          ? "dark"
-          : theme === "dark"
-            ? "system"
-            : "light",
-    );
+    // claro → noite (painéis claros, fundo escuro) → escuro → claro. "Sistema"
+    // saiu do ciclo por decisão de produto; quem já o tinha salvo cai no claro
+    // no próximo clique.
+    setTheme(theme === "light" ? "noite" : theme === "noite" ? "dark" : "light");
   };
 
   useHotkeys("mod+shift+l", cycle, { preventDefault: true }, [theme]);
