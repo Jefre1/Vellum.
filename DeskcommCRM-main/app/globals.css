@@ -233,8 +233,10 @@
    * o vidro só deixa ver o fundo, e o texto sobre ele é medido contra
    * `--color-surface`, que é a cor que o vidro tende a mostrar.
    */
-  --glass-bg: rgba(255, 255, 255, 0.62);
-  --glass-bg-strong: rgba(255, 255, 255, 0.82);
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-bg-strong: rgba(255, 255, 255, 0.66);
+  /* O wallpaper lilás do tema claro (public/fundos/lilas-claro.webp). */
+  --bg-wallpaper: url("/fundos/lilas-claro.webp");
   --glass-border: rgba(255, 255, 255, 0.75);
   --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
   --bg-glow-1: rgba(167, 139, 250, 0.32);
@@ -356,8 +358,10 @@
    * o vidro só deixa ver o fundo, e o texto sobre ele é medido contra
    * `--color-surface`, que é a cor que o vidro tende a mostrar.
    */
-  --glass-bg: rgba(255, 255, 255, 0.62);
-  --glass-bg-strong: rgba(255, 255, 255, 0.82);
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-bg-strong: rgba(255, 255, 255, 0.66);
+  /* O wallpaper lilás do tema claro (public/fundos/lilas-claro.webp). */
+  --bg-wallpaper: url("/fundos/lilas-claro.webp");
   --glass-border: rgba(255, 255, 255, 0.75);
   --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
   --bg-glow-1: rgba(167, 139, 250, 0.32);
@@ -466,6 +470,7 @@
   /* ---- Vidro e luz de fundo (tema escuro) ---------------------------- */
   --glass-bg: rgba(30, 26, 48, 0.58);
   --glass-bg-strong: rgba(30, 26, 48, 0.82);
+  --bg-wallpaper: none;
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   --bg-glow-1: rgba(124, 92, 240, 0.24);
@@ -844,9 +849,12 @@
        a página rola. Só imagem: a cor de fundo continua sendo o token, e é ela
        que a régua de contraste mede. */
     background-image:
+      var(--bg-wallpaper),
       radial-gradient(60rem 40rem at 0% 0%, var(--bg-glow-1), transparent 60%),
       radial-gradient(50rem 36rem at 100% 0%, var(--bg-glow-2), transparent 60%),
       radial-gradient(56rem 40rem at 70% 100%, var(--bg-glow-3), transparent 60%);
+    background-size: cover;
+    background-position: center;
     background-attachment: fixed;
     color: var(--color-text);
     font-family:
