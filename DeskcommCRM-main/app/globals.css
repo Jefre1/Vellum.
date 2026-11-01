@@ -474,12 +474,12 @@
   --agenda-pessoa-7: #be9ef6;
   --agenda-pessoa-8: #cc77b1;
   /* ---- Vidro e luz de fundo (tema escuro) ---------------------------- */
-  --glass-bg: rgba(22, 18, 46, 0.9);
-  --glass-bg-strong: rgba(22, 18, 46, 0.92);
+  --glass-bg: rgba(22, 18, 46, 0.84);
+  --glass-bg-strong: rgba(22, 18, 46, 0.88);
   /* O wallpaper escuro (public/fundos/lilas-escuro.webp). */
   --bg-wallpaper: url("/fundos/lilas-escuro.webp");
   --page-bg: rgba(12, 10, 30, 0.55);
-  --card-bg: rgba(24, 20, 50, 0.9);
+  --card-bg: rgba(24, 20, 50, 0.84);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   --bg-glow-1: rgba(124, 92, 240, 0.24);
