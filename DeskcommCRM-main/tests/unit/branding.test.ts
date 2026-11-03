@@ -1021,6 +1021,11 @@ const HOSTS_DECLARADOS: Record<string, EntradaDeHost> = {
     motivo:
       "endpoint padrão do canal parceiro que espelha a Cloud API (recorte do #1130), com override por DATAFY_API_BASE_URL. É o destino das chamadas de envio e de validação do token — e o canal só existe numa instalação que o liga (DATAFY_ENABLED).",
   },
+  "api.coexy.com.br": {
+    categoria: "FORNECEDOR",
+    motivo:
+      "endpoint padrão do canal Coexy (relay da Cloud API), com override por COEXY_API_BASE_URL. É o destino da Management API (criar canal e webhook) e do meta-proxy (envio) — e o canal só existe numa instalação que o liga (COEXY_ENABLED).",
+  },
   // ── painel do fornecedor: texto de tela apontando para o endereço DELE ────
   "platform.openai.com": {
     categoria: "CONSOLE",

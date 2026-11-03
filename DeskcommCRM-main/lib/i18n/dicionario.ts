@@ -19044,6 +19044,26 @@ export const DICIONARIO: Traducoes = {
   "Out": { es: "Oct" },
   "Nov": { es: "Nov" },
   "Dez": { es: "Dic" },
+  // ---- Canal relay (Coexy) ----
+  "Abra o link abaixo (ou envie para o dono do número) e autorize pelo fluxo da Meta. Esta tela atualiza sozinha quando o número entrar.": { es: "Abre el enlace de abajo (o envíalo al dueño del número) y autoriza por el flujo de Meta. Esta pantalla se actualiza sola cuando el número entre." },
+  "A chave é testada contra o provedor antes de qualquer coisa ser criada.": { es: "La clave se prueba con el proveedor antes de crear cualquier cosa." },
+  "API key": { es: "API key" },
+  "Abrir link de conexão": { es: "Abrir enlace de conexión" },
+  "Aguardando o número": { es: "Esperando el número" },
+  "Canal criado. Agora conecte o número pelo link.": { es: "Canal creado. Ahora conecta el número por el enlace." },
+  "Conecte o número do WhatsApp": { es: "Conecta el número de WhatsApp" },
+  "Criando o canal…": { es: "Creando el canal…" },
+  "Criar webhook": { es: "Crear webhook" },
+  "Ex.: Suporte Principal": { es: "Ej.: Soporte Principal" },
+  "No painel do provedor: Configurações → API Keys. Guardada cifrada e nunca mostrada de novo.": { es: "En el panel del proveedor: Configuración → API Keys. Se guarda cifrada y no se vuelve a mostrar." },
+  "Não foi possível criar o webhook.": { es: "No se pudo crear el webhook." },
+  "O provedor só entrega em endereço HTTPS público. Sem ele o CRM envia, mas não recebe as respostas. Com o domínio configurado, clique em Criar webhook.": { es: "El proveedor solo entrega en una dirección HTTPS pública. Sin ella el CRM envía, pero no recibe las respuestas. Con el dominio configurado, haz clic en Crear webhook." },
+  "O webhook foi criado no provedor: as mensagens dos clientes entram no Inbox.": { es: "El webhook se creó en el proveedor: los mensajes de los clientes entran en el Inbox." },
+  "O webhook não pôde ser criado — o CRM envia, mas ainda não recebe.": { es: "No se pudo crear el webhook: el CRM envía, pero todavía no recibe." },
+  "Webhook criado. O canal passa a receber mensagens.": { es: "Webhook creado. El canal empieza a recibir mensajes." },
+  "número ainda não conectado": { es: "número aún no conectado" },
+  "Um número oficial (WhatsApp Business) pela API da Meta, por um provedor parceiro. Você cola só a API key do painel do provedor: o CRM cria o canal, o link de conexão e o webhook sozinho.": { es: "Un número oficial (WhatsApp Business) por la API de Meta, a través de un proveedor socio. Solo pegas la API key del panel del proveedor: el CRM crea el canal, el enlace de conexión y el webhook por sí solo." },
+  "Nome da conexão (opcional)": { es: "Nombre de la conexión (opcional)" },
 };
 
 /**
