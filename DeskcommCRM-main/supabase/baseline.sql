@@ -9604,14 +9604,26 @@ alter table public.channel_sessions
   add column if not exists datafy_waba_id text,
   add column if not exists datafy_token_encrypted bytea;
 
+-- coexy (migration 9059, canal Coexy — relay da Cloud API conectado por API key)
+-- — colunas do provider, nullable, antes das constraints que as referenciam.
+-- A referência é o id do CANAL no Coexy: ele existe antes do número.
+alter table public.channel_sessions
+  add column if not exists coexy_channel_id text,
+  add column if not exists coexy_phone_number_id text,
+  add column if not exists coexy_waba_id text,
+  add column if not exists coexy_token_encrypted bytea,
+  add column if not exists coexy_api_key_encrypted bytea,
+  add column if not exists coexy_webhook_id text,
+  add column if not exists coexy_connect_url text;
+
 alter table public.channel_sessions
   drop constraint if exists channel_sessions_provider_check;
 
 alter table public.channel_sessions
   add constraint channel_sessions_provider_check
-  -- 'wacalls' (0233), 'zernio_social' (0368) e 'datafy' (0387) somados AQUI —
-  -- UM bloco só por constraint (não duplicar drop+add por migration).
-  check (provider = any (array['waha'::text, 'meta_cloud'::text, 'zernio'::text, 'wacalls'::text, 'zernio_social'::text, 'datafy'::text]));
+  -- 'wacalls' (0233), 'zernio_social' (0368), 'datafy' (0387) e 'coexy' (9059)
+  -- somados AQUI — UM bloco só por constraint (não duplicar drop+add por migration).
+  check (provider = any (array['waha'::text, 'meta_cloud'::text, 'zernio'::text, 'wacalls'::text, 'zernio_social'::text, 'datafy'::text, 'coexy'::text]));
 
 alter table public.channel_sessions
   drop constraint if exists channel_sessions_provider_ref_check;
@@ -9624,7 +9636,8 @@ alter table public.channel_sessions
     -- é o mesmo intermediário, com outra superfície de canal.
     (provider in ('zernio', 'zernio_social') and zernio_account_id is not null) or
     (provider = 'wacalls'    and wacalls_session_id    is not null) or
-    (provider = 'datafy'     and datafy_phone_number_id is not null)
+    (provider = 'datafy'     and datafy_phone_number_id is not null) or
+    (provider = 'coexy'      and coexy_channel_id is not null)
   );
 
 comment on column public.channel_sessions.zernio_account_id is
@@ -14789,7 +14802,10 @@ alter table public.webhook_events_log
     -- (migration 0601) os provedores de cobrança do revendedor. A linha deles
     -- nasce com organization_id nulo e corpo {id,type}: é ponteiro, nunca o
     -- corpo do provedor, e fica invisível ao tenant pela própria policy.
-    'stripe', 'asaas'
+    'stripe', 'asaas',
+    -- (migration 9059) o canal Coexy entra pela rota genérica de canal, que
+    -- arquiva o corpo cru com o provider da sessão.
+    'coexy'
   ));
 
 -- ---- a marca da instalação sai do .env e vai para o banco (migration 0155) ----
@@ -70597,3 +70613,44 @@ begin
     execute 'alter publication supabase_realtime drop table public.crm_lead_reactivations';
   end if;
 end $$;
+
+-- ---- canal Coexy: índices únicos entre ativos (migration 9059) ----
+-- `coexy_channel_id` e `coexy_phone_number_id` são identificadores do PROVIDER;
+-- duas linhas ativas iguais fariam `maybeSingle()` devolver PGRST116. A dedup
+-- com sufixo antes do índice deixa o update.sh de um clone com repetidos passar.
+with ativos as (
+  select id,
+         row_number() over (partition by coexy_channel_id order by created_at desc nulls last, id desc) as posicao
+    from public.channel_sessions
+   where archived_at is null and coexy_channel_id is not null
+)
+update public.channel_sessions s
+   set coexy_channel_id = s.coexy_channel_id || '-conflito-' || s.id::text
+  from ativos a
+ where a.id = s.id and a.posicao > 1;
+
+create unique index if not exists channel_sessions_coexy_channel_id_ativo_unique
+  on public.channel_sessions (coexy_channel_id)
+  where archived_at is null and coexy_channel_id is not null;
+
+with ativos as (
+  select id,
+         row_number() over (partition by coexy_phone_number_id order by created_at desc nulls last, id desc) as posicao
+    from public.channel_sessions
+   where archived_at is null and coexy_phone_number_id is not null
+)
+update public.channel_sessions s
+   set coexy_phone_number_id = s.coexy_phone_number_id || '-conflito-' || s.id::text
+  from ativos a
+ where a.id = s.id and a.posicao > 1;
+
+create unique index if not exists channel_sessions_coexy_phone_number_id_ativo_unique
+  on public.channel_sessions (coexy_phone_number_id)
+  where archived_at is null and coexy_phone_number_id is not null;
+
+comment on column public.channel_sessions.coexy_channel_id is
+  'Id do canal no Coexy (UUID do relay). É o sessionRef deste canal — existe desde a criação, antes do número ser conectado. Espelhado em lib/channels/session-ref.ts.';
+comment on column public.channel_sessions.coexy_token_encrypted is
+  'channel_token do Coexy (Bearer do meta-proxy), cifrado por fn_encrypt_oauth. Nunca volta à tela.';
+comment on column public.channel_sessions.coexy_api_key_encrypted is
+  'API key da organização no Coexy (Management API), cifrada por fn_encrypt_oauth. Usada para criar/consultar o canal e o webhook. Nunca volta à tela.';

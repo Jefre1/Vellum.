@@ -125,6 +125,21 @@ export const CHANNEL_CAPABILITIES: Record<ProviderDeMensagem, ChannelCapabilitie
     // agenda de celular a ler, e dizer `true` aqui seria um botão que só falha.
     phonebook: false,
   },
+  // Coexy: relay transparente da Cloud API (mesmos caminhos e corpos, outro
+  // host e o `channel_token` do canal). Como o `datafy`, muda o TRANSPORTE e não
+  // o que o WhatsApp permite — o perfil é o do canal oficial.
+  coexy: {
+    freeformOutsideWindow: false,
+    requiresTemplates: true,
+    canManageTemplates: true,
+    banRisk: false,
+    minIntervalMs: 6000,
+    voiceNote: "opus-only",
+    groups: "limited",
+    costPerMessage: true,
+    alteraMensagemEnviada: false,
+    phonebook: false,
+  },
 };
 
 /**
@@ -149,6 +164,8 @@ export const CHANNEL_PROVIDER_SOCIAL: ChannelProvider = "zernio_social";
 export const CHANNEL_PROVIDER_ZERNIO: ChannelProvider = "zernio";
 /** Parceiro que espelha a Cloud API — canal opcional da instalação, desligado por padrão. */
 export const CHANNEL_PROVIDER_DATAFY: ChannelProvider = "datafy";
+/** Relay da Cloud API conectado por API key — canal opcional da instalação, desligado por padrão. */
+export const CHANNEL_PROVIDER_COEXY: ChannelProvider = "coexy";
 /** Chamada de voz WhatsApp (spec 18). Não transporta mensagem — ver abaixo. */
 export const CHANNEL_PROVIDER_WACALLS: ChannelProvider = "wacalls";
 
@@ -182,6 +199,7 @@ export const PROVIDERS_DE_MENSAGEM = [
   "zernio",
   "zernio_social",
   "datafy",
+  "coexy",
 ] as const satisfies readonly ProviderDeMensagem[];
 
 /**
@@ -203,6 +221,7 @@ export const PROVIDERS_DE_TELEFONE = [
   "meta_cloud",
   "zernio",
   "datafy",
+  "coexy",
 ] as const satisfies readonly Exclude<(typeof PROVIDERS_DE_MENSAGEM)[number], "zernio_social">[];
 
 /**

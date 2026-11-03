@@ -21,7 +21,7 @@
  */
 import type { ProviderDeMensagem } from "./types";
 
-export type FonteDeTemplates = "oficial" | "parceiro" | "graph";
+export type FonteDeTemplates = "oficial" | "parceiro" | "graph" | "relay";
 
 /**
  * Qual rota serve as definições de cada canal.
@@ -47,6 +47,9 @@ const FONTE: Record<ProviderDeMensagem, FonteDeTemplates | null> = {
   // Parceiro Graph-compatível: os modelos são os da Cloud API, servidos por uma
   // rota própria (host/token do parceiro).
   datafy: "graph",
+  // Relay da Cloud API (Coexy): os modelos são os da Meta, servidos pela rota
+  // própria do canal (host e token do relay).
+  coexy: "relay",
 };
 
 /** `null` quando este canal não trabalha com definições aprovadas. */
@@ -59,6 +62,7 @@ export function fonteDeTemplates(provider: string | null | undefined): FonteDeTe
 export function rotaDeTemplates(fonte: FonteDeTemplates): string {
   if (fonte === "parceiro") return "/api/v1/channels/partner/templates";
   if (fonte === "graph") return "/api/v1/channels/graph-partner/templates";
+  if (fonte === "relay") return "/api/v1/channels/relay/templates";
   return "/api/v1/channels/templates";
 }
 

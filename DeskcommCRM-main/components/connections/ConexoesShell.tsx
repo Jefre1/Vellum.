@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RedesSociaisClient } from "./RedesSociaisClient";
 import { CanalGraphParceiroClient } from "./CanalGraphParceiroClient";
 import { CanalOficialClient } from "./CanalOficialClient";
+import { CanalRelayClient } from "./CanalRelayClient";
 import { CanalParceiroClient } from "./CanalParceiroClient";
 import { CanalVozClient } from "./CanalVozClient";
 import { ConnectionsClient } from "./ConnectionsClient";
@@ -42,6 +43,7 @@ export function ConexoesShell({
   wahaConfigured,
   wacallsConfigured,
   graphParceiro = null,
+  relay = null,
 }: {
   wahaConfigured: boolean;
   wacallsConfigured: boolean;
@@ -52,6 +54,11 @@ export function ConexoesShell({
    * O rótulo vem do servidor porque a tela não pode nomear provider.
    */
   graphParceiro?: { label: string } | null;
+  /**
+   * O canal "relay" (espelha a Cloud API, conecta por API key): mesma régua do
+   * parceiro acima — opcional da instalação, `null` = a aba não existe.
+   */
+  relay?: { label: string } | null;
 }) {
   const t = useT();
   const router = useRouter();
@@ -61,16 +68,18 @@ export function ConexoesShell({
     abaParam === "sociais"
       ? "sociais"
       : abaParam === "oficial"
-      ? "oficial"
-      : abaParam === "parceiro"
-        ? "parceiro"
-        : abaParam === "telefonia"
-          ? "telefonia"
-          : abaParam === "voz"
-            ? "voz"
-            : abaParam === "graph" && graphParceiro
-              ? "graph"
-              : "numeros";
+        ? "oficial"
+        : abaParam === "parceiro"
+          ? "parceiro"
+          : abaParam === "telefonia"
+            ? "telefonia"
+            : abaParam === "voz"
+              ? "voz"
+              : abaParam === "graph" && graphParceiro
+                ? "graph"
+                : abaParam === "relay" && relay
+                  ? "relay"
+                  : "numeros";
   const sub = params.get("sub") === "templates" ? "templates" : "conexao";
 
   const irPara = (proximaAba: string, proximaSub?: string): void => {
@@ -107,6 +116,7 @@ export function ConexoesShell({
         <TabsTrigger value="sociais">{t("Redes sociais")}</TabsTrigger>
         <TabsTrigger value="voz">{t("Chamada de voz")}</TabsTrigger>
         {graphParceiro && <TabsTrigger value="graph">{graphParceiro.label}</TabsTrigger>}
+        {relay && <TabsTrigger value="relay">{relay.label}</TabsTrigger>}
       </TabsList>
 
       <TabsContent value="numeros" className="mt-0">
@@ -116,7 +126,9 @@ export function ConexoesShell({
       <TabsContent value="telefonia" className="mt-0">
         <TelefoniaClient />
       </TabsContent>
-      <TabsContent value="sociais" className="mt-0"><RedesSociaisClient /></TabsContent>
+      <TabsContent value="sociais" className="mt-0">
+        <RedesSociaisClient />
+      </TabsContent>
 
       <TabsContent value="voz" className="mt-0">
         <CanalVozClient wacallsConfigured={wacallsConfigured} />
@@ -127,7 +139,11 @@ export function ConexoesShell({
           {/* Sub-abas como nas demais: conectar e gerenciar modelos são tarefas
               diferentes. O componente de modelos é o MESMO do outro parceiro,
               apontado para a rota desta fonte. */}
-          <Tabs value={sub} onValueChange={(v) => irPara("graph", v)} className="flex flex-col gap-4">
+          <Tabs
+            value={sub}
+            onValueChange={(v) => irPara("graph", v)}
+            className="flex flex-col gap-4"
+          >
             <TabsList>
               <TabsTrigger value="conexao">{t("Conexão")}</TabsTrigger>
               <TabsTrigger value="templates">{t("Modelos")}</TabsTrigger>
@@ -146,13 +162,38 @@ export function ConexoesShell({
         </TabsContent>
       )}
 
+      {relay && (
+        <TabsContent value="relay" className="mt-0">
+          <Tabs
+            value={sub}
+            onValueChange={(v) => irPara("relay", v)}
+            className="flex flex-col gap-4"
+          >
+            <TabsList>
+              <TabsTrigger value="conexao">{t("Conexão")}</TabsTrigger>
+              <TabsTrigger value="templates">{t("Modelos")}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="conexao" className="mt-0">
+              <CanalRelayClient />
+            </TabsContent>
+            <TabsContent value="templates" className="mt-0">
+              <TemplatesParceiroClient rota={rotaDeTemplates("relay")} />
+            </TabsContent>
+          </Tabs>
+        </TabsContent>
+      )}
+
       <TabsContent value="parceiro" className="mt-0">
         {/* Sub-abas como no canal oficial, e pelo mesmo motivo: conectar e
             gerenciar definições são tarefas diferentes, e empilhá-las numa tela
             só faz a segunda sumir abaixo da dobra. O rótulo diz "do parceiro"
             para não colidir com "Templates" da barra lateral, que significa
             OUTRA coisa (respostas rápidas do atendente). */}
-        <Tabs value={sub} onValueChange={(v) => irPara("parceiro", v)} className="flex flex-col gap-4">
+        <Tabs
+          value={sub}
+          onValueChange={(v) => irPara("parceiro", v)}
+          className="flex flex-col gap-4"
+        >
           <TabsList>
             <TabsTrigger value="conexao">{t("Conexão")}</TabsTrigger>
             <TabsTrigger value="templates">{t("Modelos do parceiro")}</TabsTrigger>
@@ -167,7 +208,11 @@ export function ConexoesShell({
       </TabsContent>
 
       <TabsContent value="oficial" className="mt-0">
-        <Tabs value={sub} onValueChange={(v) => irPara("oficial", v)} className="flex flex-col gap-4">
+        <Tabs
+          value={sub}
+          onValueChange={(v) => irPara("oficial", v)}
+          className="flex flex-col gap-4"
+        >
           <TabsList>
             <TabsTrigger value="conexao">{t("Conexão")}</TabsTrigger>
             {/* "Templates da Meta", não "Templates": a barra lateral já tem um item

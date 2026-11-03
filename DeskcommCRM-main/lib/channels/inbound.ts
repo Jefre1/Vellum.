@@ -20,7 +20,20 @@ import { CHANNEL_PROVIDER_SOCIAL } from "./capabilities";
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { CHANNEL_PROVIDER_DATAFY, CHANNEL_PROVIDER_ZERNIO } from "./capabilities";
+import {
+  CHANNEL_PROVIDER_COEXY,
+  CHANNEL_PROVIDER_DATAFY,
+  CHANNEL_PROVIDER_ZERNIO,
+} from "./capabilities";
+import { canalCoexyLigado } from "./coexy/config";
+import { aplicarStatusDoCanal, coexySessionById } from "./coexy/session";
+import {
+  HEADER_ASSINATURA_COEXY,
+  lerEventoDeStatus,
+  statusDaSessao,
+  telefoneE164,
+  verifyCoexySignature,
+} from "./coexy/webhook";
 import { canalGraphParceiroLigado } from "./graph-parceiro/credentials";
 import { graphPartnerRefsDaSessao } from "./graph-parceiro/session";
 import {
@@ -86,15 +99,31 @@ export function acceptsInboundWebhook(provider: string): boolean {
   // O canal Datafy é opcional da instalação: desligado, a entrada dele não
   // existe — nem para quem tem o token de uma sessão gravada antes.
   if (provider === CHANNEL_PROVIDER_DATAFY) return canalGraphParceiroLigado();
+  // Mesma régua para o relay: desligado na instalação, a entrada não existe.
+  if (provider === CHANNEL_PROVIDER_COEXY) return canalCoexyLigado();
   return provider === CHANNEL_PROVIDER_ZERNIO || provider === CHANNEL_PROVIDER_SOCIAL;
 }
 
 /** Authenticate before archiving raw payloads. The handler repeats this guard for non-HTTP callers. */
-export function verifyInboundWebhookSignature(provider: string, raw: string, headers: Headers, secret: string | null): boolean {
+export function verifyInboundWebhookSignature(
+  provider: string,
+  raw: string,
+  headers: Headers,
+  secret: string | null,
+): boolean {
   if (!acceptsInboundWebhook(provider) || !secret || secret.length < MIN_SECRET_LEN) return false;
   // Cada canal assina do seu jeito; o esquema do Datafy está em `graph-parceiro/webhook`.
   if (provider === CHANNEL_PROVIDER_DATAFY) {
-    return verifyGraphPartnerSignature(raw, headers.get(HEADER_ASSINATURA), headers.get(HEADER_TIMESTAMP), secret);
+    return verifyGraphPartnerSignature(
+      raw,
+      headers.get(HEADER_ASSINATURA),
+      headers.get(HEADER_TIMESTAMP),
+      secret,
+    );
+  }
+  // O relay assina só o corpo (`x-coexy-signature: sha256=<hex>`) — `coexy/webhook`.
+  if (provider === CHANNEL_PROVIDER_COEXY) {
+    return verifyCoexySignature(raw, headers.get(HEADER_ASSINATURA_COEXY), secret);
   }
   return verifyZernioSignature(raw, headers.get("x-zernio-signature"), secret);
 }
@@ -129,13 +158,22 @@ export function verifyInboundWebhookSignature(provider: string, raw: string, hea
  * entra: sem a conta não há como dizer de qual número o evento é, e ingerir
  * seria escolher por palpite a caixa de entrada.
  */
-export async function inboundPayloadBelongsToSession(admin: SupabaseClient, input: InboundWebhookInput): Promise<boolean> {
+export async function inboundPayloadBelongsToSession(
+  admin: SupabaseClient,
+  input: InboundWebhookInput,
+): Promise<boolean> {
   if (input.session.provider === CHANNEL_PROVIDER_SOCIAL) {
-    return socialPayloadBelongsToSession(admin, input.session.organization_id, input.session.id, input.rawBody);
+    return socialPayloadBelongsToSession(
+      admin,
+      input.session.organization_id,
+      input.session.id,
+      input.rawBody,
+    );
   }
   if (input.session.provider === CHANNEL_PROVIDER_ZERNIO) {
     const { evento, conta: contaDoEvento } = cabecalhoDoEventoZernio(input.rawBody);
-    if (contaDoEvento === null) return !EVENTOS_QUE_SEMPRE_TRAZEM_CONTA.some((p) => evento?.startsWith(p));
+    if (contaDoEvento === null)
+      return !EVENTOS_QUE_SEMPRE_TRAZEM_CONTA.some((p) => evento?.startsWith(p));
     // A guarda busca a conta ELA MESMA, como a do canal social: a rota do
     // webhook é genérica, e `lint:channels` recusa nome de coluna de provedor
     // ali. Uma guarda que dependesse de a rota lembrar de trazer a coluna
@@ -147,7 +185,8 @@ export async function inboundPayloadBelongsToSession(admin: SupabaseClient, inpu
       .eq("id", input.session.id)
       .maybeSingle();
     if (error) throw new Error("zernio_session_lookup_failed");
-    const contaDaSessao = (data as { zernio_account_id?: string | null } | null)?.zernio_account_id ?? null;
+    const contaDaSessao =
+      (data as { zernio_account_id?: string | null } | null)?.zernio_account_id ?? null;
     // Sessão sem conta RECUSA. Hoje este ramo não executa — a constraint
     // `channel_sessions_provider_ref_check` exige `zernio_account_id` nesta
     // sessão —, e é por isso que ele pode ser o fechado: se um dia a constraint
@@ -174,7 +213,8 @@ function cabecalhoDoEventoZernio(rawBody: string): { evento: string | null; cont
   }
   if (!p || typeof p !== "object") return { evento: null, conta: null };
   const o = p as Record<string, unknown>;
-  const conta = o.account && typeof o.account === "object" ? (o.account as Record<string, unknown>) : null;
+  const conta =
+    o.account && typeof o.account === "object" ? (o.account as Record<string, unknown>) : null;
   const valor = conta?.id ?? conta?.accountId ?? o.accountId;
   return {
     evento: typeof o.event === "string" ? o.event : null,
@@ -194,6 +234,8 @@ export async function handleInboundWebhook(
       return zernioInbound(admin, input);
     case CHANNEL_PROVIDER_DATAFY:
       return datafyInbound(admin, input);
+    case CHANNEL_PROVIDER_COEXY:
+      return coexyInbound(admin, input);
     default:
       // Token de um canal que não entra por aqui. É configuração trocada, não
       // ataque — mas processar seria ler o payload com o parser errado.
@@ -242,7 +284,12 @@ async function zernioInbound(
   }
   const payload = leitura.envelope;
   if (input.session.provider === CHANNEL_PROVIDER_SOCIAL) {
-    const result = await ingestSocialInbound(admin, input.session.organization_id, input.session.id, payload);
+    const result = await ingestSocialInbound(
+      admin,
+      input.session.organization_id,
+      input.session.id,
+      payload,
+    );
     return { ok: true, body: { ...result } };
   }
 
@@ -304,7 +351,11 @@ async function zernioInbound(
         // O `status` que vai para `channel_session_health` é o OBSERVADO agora,
         // não o guardado: quem acabou de falar foi o provedor, e a linha do
         // episódio serve justamente para registrar o que ele disse.
-        { id: input.session.id, organization_id: input.session.organization_id, status: saude.status },
+        {
+          id: input.session.id,
+          organization_id: input.session.organization_id,
+          status: saude.status,
+        },
         saude,
         // O APELIDO da conexão, não o texto do evento. Passar `aviso.title` aqui
         // produzia `WhatsApp "Número SUSPENSO — não é possível enviar." fora do
@@ -357,7 +408,14 @@ async function datafyInbound(
   admin: SupabaseClient,
   input: InboundWebhookInput,
 ): Promise<InboundWebhookOutcome> {
-  if (!verifyInboundWebhookSignature(input.session.provider, input.rawBody, input.headers, input.secret)) {
+  if (
+    !verifyInboundWebhookSignature(
+      input.session.provider,
+      input.rawBody,
+      input.headers,
+      input.secret,
+    )
+  ) {
     return { ok: false, code: "unauthorized", message: "bad_signature" };
   }
 
@@ -373,9 +431,28 @@ async function datafyInbound(
     };
   }
 
+  const refs = await graphPartnerRefsDaSessao(
+    admin,
+    input.session.organization_id,
+    input.session.id,
+  );
+  return ingerirEnvelopeMeta(admin, input, leitura.envelope, refs);
+}
+
+/**
+ * O miolo de quem ESPELHA a Cloud API (Datafy, Coexy): o envelope é o da Meta,
+ * então a leitura reusa `parseMetaWebhook` + a ingestão do canal oficial. O
+ * evento só é aceito se for do número e da conta DESTA sessão — a sessão veio
+ * do token do caminho, e o corpo não escolhe onde gravar.
+ */
+async function ingerirEnvelopeMeta(
+  admin: SupabaseClient,
+  input: InboundWebhookInput,
+  envelope: Parameters<typeof parseMetaWebhook>[0],
+  refs: { phoneNumberId: string | null; wabaId: string | null },
+): Promise<InboundWebhookOutcome> {
   const orgId = input.session.organization_id;
-  const refs = await graphPartnerRefsDaSessao(admin, orgId, input.session.id);
-  const eventos = parseMetaWebhook(leitura.envelope);
+  const eventos = parseMetaWebhook(envelope);
   const desfechos: string[] = [];
   const agora = new Date().toISOString();
 
@@ -454,4 +531,74 @@ async function datafyInbound(
   }
 
   return { ok: true, body: { received: eventos.length, outcomes: desfechos } };
+}
+
+/**
+ * Entrada do canal Coexy (relay da Cloud API).
+ *
+ * Dois tipos de corpo chegam pelo mesmo webhook:
+ *
+ *  - `channel_status_update` — evento DO Coexy: o canal mudou de status. É por
+ *    ele que a sessão (criada antes do número) recebe `phone_number_id`, conta e
+ *    `WORKING` quando o número é conectado pelo link de conexão. Só vale se for
+ *    do canal DESTA sessão.
+ *  - o envelope da Meta, sem transformação — o mesmo miolo do outro parceiro.
+ *
+ * Fail-closed: a assinatura é conferida de novo aqui porque esta função também
+ * é chamada fora da rota.
+ */
+async function coexyInbound(
+  admin: SupabaseClient,
+  input: InboundWebhookInput,
+): Promise<InboundWebhookOutcome> {
+  if (
+    !verifyInboundWebhookSignature(
+      input.session.provider,
+      input.rawBody,
+      input.headers,
+      input.secret,
+    )
+  ) {
+    return { ok: false, code: "unauthorized", message: "bad_signature" };
+  }
+
+  const orgId = input.session.organization_id;
+  const sessao = await coexySessionById(admin, orgId, input.session.id);
+  if (!sessao)
+    return { ok: false, code: "provider_mismatch", message: "sessão do canal não encontrada" };
+
+  const status = lerEventoDeStatus(input.rawBody);
+  if (status) {
+    if (status.channelId !== sessao.channelId) {
+      return { ok: true, body: { received: 1, outcomes: ["outro_canal"] } };
+    }
+    const { error } = await aplicarStatusDoCanal(admin, {
+      organizationId: orgId,
+      channelSessionId: sessao.id,
+      status: statusDaSessao(status.status),
+      phoneNumberId: status.phoneNumberId,
+      wabaId: status.wabaId,
+      phoneNumber: telefoneE164(status.displayPhoneNumber),
+    });
+    if (error) throw new Error(`coexy_status_update_failed: ${error}`);
+    return { ok: true, body: { received: 1, outcomes: [`status:${status.status}`] } };
+  }
+
+  const leitura = lerEnvelopeMeta(input.rawBody);
+  if (!leitura.ok) {
+    if (leitura.motivo === "json_invalido")
+      return { ok: false, code: "invalid_json", message: "invalid_json" };
+    // Evento próprio do relay que não tratamos (ex.: `channel_health_update`)
+    // não chega aqui: o leitor do envelope o aceita e o parser não acha evento
+    // da Meta nele — 200 com zero eventos, e o relay não reenvia.
+    return {
+      ok: false,
+      code: "contrato_violado",
+      message: `payload fora do contrato do canal: ${leitura.campos.join(", ")}`,
+    };
+  }
+  return ingerirEnvelopeMeta(admin, input, leitura.envelope, {
+    phoneNumberId: sessao.phoneNumberId,
+    wabaId: sessao.wabaId,
+  });
 }

@@ -5,6 +5,7 @@ import { requireAuth, resolveActiveOrg } from "@/lib/auth/server";
 import { ROLE_RANK } from "@/lib/auth/types";
 import { ConexoesShell } from "@/components/connections/ConexoesShell";
 import { canalGraphParceiroLigado, GRAPH_PARTNER_LABEL } from "@/lib/channels/graph-parceiro/credentials";
+import { canalRelayLigado, RELAY_LABEL } from "@/lib/channels/relay";
 import { traduzir } from "@/lib/i18n/dicionario";
 
 export const dynamic = "force-dynamic";
@@ -40,6 +41,7 @@ export default async function ConnectionsPage() {
         wahaConfigured={wahaConfigured}
         wacallsConfigured={wacallsConfigured}
         graphParceiro={canalGraphParceiroLigado() ? { label: GRAPH_PARTNER_LABEL } : null}
+        relay={canalRelayLigado() ? { label: RELAY_LABEL } : null}
       />
     </div>
   );

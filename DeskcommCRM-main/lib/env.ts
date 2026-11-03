@@ -290,6 +290,14 @@ const schema = z.object({
   // é `canalGraphParceiroLigado()` em `lib/channels/graph-parceiro/credentials.ts`.
   DATAFY_ENABLED: z.string().optional().default(""),
 
+  // ─── Canal Coexy (relay da Cloud API) — OPCIONAL, DESLIGADO POR PADRÃO ───
+  //
+  // Mesma régua do Datafy: só `true` liga; vazio = sem aba, rotas 404, webhook
+  // recusado. Quem lê é `canalCoexyLigado()` em `lib/channels/coexy/config.ts`.
+  // A base vazia usa a produção (`https://api.coexy.com.br/functions/v1`).
+  COEXY_ENABLED: z.string().optional().default(""),
+  COEXY_API_BASE_URL: z.string().optional().default(""),
+
   // Upstash Redis
   UPSTASH_REDIS_REST_URL: required("UPSTASH_REDIS_REST_URL"),
   UPSTASH_REDIS_REST_TOKEN: required("UPSTASH_REDIS_REST_TOKEN"),
